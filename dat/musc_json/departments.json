@@ -1,0 +1,493 @@
+[
+    {
+        "DepartmentID": "49",
+        "Department": "Medicine"
+    },
+    {
+        "DepartmentID": "199",
+        "Department": "Adolescent"
+    },
+    {
+        "DepartmentID": "200",
+        "Department": "Anesthesia"
+    },
+    {
+        "DepartmentID": "201",
+        "Department": "Health Professions"
+    },
+    {
+        "DepartmentID": "202",
+        "Department": "Biochemistry"
+    },
+    {
+        "DepartmentID": "203",
+        "Department": "DPHS"
+    },
+    {
+        "DepartmentID": "204",
+        "Department": "Medicine"
+    },
+    {
+        "DepartmentID": "205",
+        "Department": "Surgery"
+    },
+    {
+        "DepartmentID": "206",
+        "Department": "Health Professions"
+    },
+    {
+        "DepartmentID": "207",
+        "Department": "Pharmacology"
+    },
+    {
+        "DepartmentID": "209",
+        "Department": "ComparativeMedicine"
+    },
+    {
+        "DepartmentID": "210",
+        "Department": "Oral Health"
+    },
+    {
+        "DepartmentID": "211",
+        "Department": "Dermatology"
+    },
+    {
+        "DepartmentID": "212",
+        "Department": "Neurogenetics"
+    },
+    {
+        "DepartmentID": "213",
+        "Department": "Medicine"
+    },
+    {
+        "DepartmentID": "214",
+        "Department": "Medicine"
+    },
+    {
+        "DepartmentID": "215",
+        "Department": "Family Medicine"
+    },
+    {
+        "DepartmentID": "216",
+        "Department": "Gastroenterology"
+    },
+    {
+        "DepartmentID": "217",
+        "Department": "Medicine"
+    },
+    {
+        "DepartmentID": "218",
+        "Department": "Pediatrics"
+    },
+    {
+        "DepartmentID": "219",
+        "Department": "Surgery"
+    },
+    {
+        "DepartmentID": "221",
+        "Department": "Health Sciences"
+    },
+    {
+        "DepartmentID": "222",
+        "Department": "Health Studies"
+    },
+    {
+        "DepartmentID": "223",
+        "Department": "Medicine"
+    },
+    {
+        "DepartmentID": "225",
+        "Department": "Medicine"
+    },
+    {
+        "DepartmentID": "226",
+        "Department": "Library"
+    },
+    {
+        "DepartmentID": "227",
+        "Department": "Microbiology"
+    },
+    {
+        "DepartmentID": "228",
+        "Department": "Pediatrics"
+    },
+    {
+        "DepartmentID": "229",
+        "Department": "Neurosciences"
+    },
+    {
+        "DepartmentID": "230",
+        "Department": "Neurosciences"
+    },
+    {
+        "DepartmentID": "231",
+        "Department": "Neurosciences"
+    },
+    {
+        "DepartmentID": "232",
+        "Department": "Nursing"
+    },
+    {
+        "DepartmentID": "234",
+        "Department": "Health Professions"
+    },
+    {
+        "DepartmentID": "235",
+        "Department": "Ophthalmology"
+    },
+    {
+        "DepartmentID": "236",
+        "Department": "Oral Surgery"
+    },
+    {
+        "DepartmentID": "237",
+        "Department": "OralRehabilitation"
+    },
+    {
+        "DepartmentID": "238",
+        "Department": "Orthopaedics"
+    },
+    {
+        "DepartmentID": "239",
+        "Department": "ENT"
+    },
+    {
+        "DepartmentID": "240",
+        "Department": "Pathology"
+    },
+    {
+        "DepartmentID": "241",
+        "Department": "Pediatrics"
+    },
+    {
+        "DepartmentID": "242",
+        "Department": "Pediatrics"
+    },
+    {
+        "DepartmentID": "243",
+        "Department": "Dental"
+    },
+    {
+        "DepartmentID": "244",
+        "Department": "Pediatrics"
+    },
+    {
+        "DepartmentID": "245",
+        "Department": "Pediatrics"
+    },
+    {
+        "DepartmentID": "246",
+        "Department": "Pediatrics"
+    },
+    {
+        "DepartmentID": "247",
+        "Department": "Pediatrics"
+    },
+    {
+        "DepartmentID": "248",
+        "Department": "Pediatrics"
+    },
+    {
+        "DepartmentID": "249",
+        "Department": "Pediatrics"
+    },
+    {
+        "DepartmentID": "250",
+        "Department": "Pediatrics"
+    },
+    {
+        "DepartmentID": "251",
+        "Department": "Pediatrics"
+    },
+    {
+        "DepartmentID": "253",
+        "Department": "Pediatrics"
+    },
+    {
+        "DepartmentID": "254",
+        "Department": "Surgery"
+    },
+    {
+        "DepartmentID": "255",
+        "Department": "Health Professions"
+    },
+    {
+        "DepartmentID": "256",
+        "Department": "Health Professions"
+    },
+    {
+        "DepartmentID": "257",
+        "Department": "Surgery"
+    },
+    {
+        "DepartmentID": "258",
+        "Department": "Psychiatry"
+    },
+    {
+        "DepartmentID": "259",
+        "Department": "Medicine"
+    },
+    {
+        "DepartmentID": "260",
+        "Department": "RadiationOncology"
+    },
+    {
+        "DepartmentID": "261",
+        "Department": "Radiology"
+    },
+    {
+        "DepartmentID": "262",
+        "Department": "Regenerative"
+    },
+    {
+        "DepartmentID": "263",
+        "Department": "Medicine"
+    },
+    {
+        "DepartmentID": "264",
+        "Department": "SCCP"
+    },
+    {
+        "DepartmentID": "266",
+        "Department": "SCCP"
+    },
+    {
+        "DepartmentID": "267",
+        "Department": "SCCP"
+    },
+    {
+        "DepartmentID": "268",
+        "Department": "Stomatology"
+    },
+    {
+        "DepartmentID": "269",
+        "Department": "Surgery"
+    },
+    {
+        "DepartmentID": "270",
+        "Department": "Urology"
+    },
+    {
+        "DepartmentID": "271",
+        "Department": "Surgery"
+    },
+    {
+        "DepartmentID": "273",
+        "Department": "ObGyn"
+    },
+    {
+        "DepartmentID": "274",
+        "Department": "Pediatrics"
+    },
+    {
+        "DepartmentID": "275",
+        "Department": "Nursing"
+    },
+    {
+        "DepartmentID": "276",
+        "Department": "Pediatrics"
+    },
+    {
+        "DepartmentID": "277",
+        "Department": "ObGyn"
+    },
+    {
+        "DepartmentID": "278",
+        "Department": "Healthcare Leadership"
+    },
+    {
+        "DepartmentID": "279",
+        "Department": "ObGyn"
+    },
+    {
+        "DepartmentID": "280",
+        "Department": "ObGyn"
+    },
+    {
+        "DepartmentID": "281",
+        "Department": "ObGyn"
+    },
+    {
+        "DepartmentID": "282",
+        "Department": "Pediatrics"
+    },
+    {
+        "DepartmentID": "283",
+        "Department": "ObGyn"
+    },
+    {
+        "DepartmentID": "284",
+        "Department": "Healthful Lifestyles"
+    },
+    {
+        "DepartmentID": "285",
+        "Department": "Pediatrics"
+    },
+    {
+        "DepartmentID": "286",
+        "Department": "Pediatrics"
+    },
+    {
+        "DepartmentID": "287",
+        "Department": "Surgery"
+    },
+    {
+        "DepartmentID": "288",
+        "Department": "Orthopaedics"
+    },
+    {
+        "DepartmentID": "289",
+        "Department": "Pediatrics"
+    },
+    {
+        "DepartmentID": "290",
+        "Department": "DPHS"
+    },
+    {
+        "DepartmentID": "291",
+        "Department": "SCCP"
+    },
+    {
+        "DepartmentID": "292",
+        "Department": "Surgery"
+    },
+    {
+        "DepartmentID": "294",
+        "Department": "Pediatrics"
+    },
+    {
+        "DepartmentID": "295",
+        "Department": "Psychiatry"
+    },
+    {
+        "DepartmentID": "296",
+        "Department": "Biochemistry"
+    },
+    {
+        "DepartmentID": "297",
+        "Department": "BMIC"
+    },
+    {
+        "DepartmentID": "298",
+        "Department": "Psychiatry"
+    },
+    {
+        "DepartmentID": "299",
+        "Department": "Pharmacology"
+    },
+    {
+        "DepartmentID": "301",
+        "Department": "Psychiatry"
+    },
+    {
+        "DepartmentID": "303",
+        "Department": "Pharmacology"
+    },
+    {
+        "DepartmentID": "304",
+        "Department": "Pediatrics"
+    },
+    {
+        "DepartmentID": "305",
+        "Department": "Research"
+    },
+    {
+        "DepartmentID": "307",
+        "Department": "Surgery"
+    },
+    {
+        "DepartmentID": "309",
+        "Department": "HollingsCancerCenter"
+    },
+    {
+        "DepartmentID": "310",
+        "Department": "Pathology"
+    },
+    {
+        "DepartmentID": "311",
+        "Department": "Psychiatry"
+    },
+    {
+        "DepartmentID": "312",
+        "Department": "Neurosciences"
+    },
+    {
+        "DepartmentID": "313",
+        "Department": "Neurosciences"
+    },
+    {
+        "DepartmentID": "314",
+        "Department": "Ophthalmology"
+    },
+    {
+        "DepartmentID": "315",
+        "Department": "ENT"
+    },
+    {
+        "DepartmentID": "316",
+        "Department": "Pathology"
+    },
+    {
+        "DepartmentID": "317",
+        "Department": "Psychiatry"
+    },
+    {
+        "DepartmentID": "318",
+        "Department": "Radiology"
+    },
+    {
+        "DepartmentID": "319",
+        "Department": "Regenerative"
+    },
+    {
+        "DepartmentID": "320",
+        "Department": "Psychiatry"
+    },
+    {
+        "DepartmentID": "321",
+        "Department": "Oral Health"
+    },
+    {
+        "DepartmentID": "329",
+        "Department": "Healthcare Leadership"
+    },
+    {
+        "DepartmentID": "336",
+        "Department": "Microbiology"
+    },
+    {
+        "DepartmentID": "351",
+        "Department": "Psychiatry"
+    },
+    {
+        "DepartmentID": "353",
+        "Department": "DPHS"
+    },
+    {
+        "DepartmentID": "359",
+        "Department": "Psychiatry"
+    },
+    {
+        "DepartmentID": "360",
+        "Department": "Oral Health"
+    },
+    {
+        "DepartmentID": "361",
+        "Department": "Pediatrics"
+    },
+    {
+        "DepartmentID": "367",
+        "Department": "Research"
+    },
+    {
+        "DepartmentID": "368",
+        "Department": "Research"
+    },
+    {
+        "DepartmentID": "371",
+        "Department": "Psychiatry"
+    },
+    {
+        "DepartmentID": ""
+    }
+]
