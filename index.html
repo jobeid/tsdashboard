@@ -12,24 +12,29 @@
   <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
   <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.0/js/bootstrap-toggle.min.js"></script>
+
+  <meta name="viewport" content="width=device-width, initial-scale=0.8, maximum-scale=1, user-scalable=yes">
+
   <script src="lib/modules/require.js" data-main="src/require-config"></script>
 </head>
 <body>
     <div class="row">
-        <div class="text-center">
+        <div class="col-sm-12 text-center">
                 <div class="panel panel-info">
-                    <div class="panel-heading title">Social Network Analysis of MUSC Publications</div>
+                    <div class="panel-heading title">
+                      <h1>Translational Science Dashboard</h1>
+                      <h3>The Medical University of South Carolina - Biomedical Informatics Center</h3>
+                    </div>
                 </div>
         </div>
     </div>
     <div class="row">
-
-        <div class="col-xs-7">
+        <div class="col-xs-9">
             <div class="panel panel-info" id="chart-panel">
                 <div class="chart" id="focalPoint"></div>
             </div>
         </div>
-        <div class="col-xs-2">
+        <div class="col-xs-3">
             <div class="panel panel-info metric-panel">
                 <div class="panel-heading title">Toolbar</div>
                 <div class="panel-body">
