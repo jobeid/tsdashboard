@@ -17,9 +17,9 @@ define(dependencies, function(d3, PubHash) {
     svg: null,
     graph: null,
     transition: null,
-    transform: 'translate(550,500)scale(.11)',
+    transform: null,
     height: 600, // this will need to be dynamically updated
-    width: 600, // '' '' '' '' '' ''
+    width: window.innerWidth * 0.9, // '' '' '' '' '' ''
     xOffset: 600 / 2, // obsolete?
     yOffset: 600 / 2, // obsolete?
     nRad: 15, // obsolete?

@@ -126,8 +126,7 @@ define(dependencies, function($, d3, properties, parseData, GraphGenerator, Spin
 
   function transition() {
     if (properties.range.lo != 2013) {
-      properties.range.lo++;
-      properties.range.hi++;
+      properties.range.lo = properties.range.hi += 1;
     } else {
       properties.range.lo = 2006;
       properties.range.hi = 2006;
@@ -186,8 +185,11 @@ define(dependencies, function($, d3, properties, parseData, GraphGenerator, Spin
         properties.range.hi = d.value[1];
         render();
       });
-      properties.height = d3.select('.metric-panel')[0][0].clientHeight;
-      properties.width = d3.select('#chart-panel')[0][0].clientWidth;
+
+      properties.transform = 'translate('+
+        (properties.width* 0.52)+','+
+        (properties.height* 0.65)+')scale(0.1)';
+
       properties.svg = d3.select('.chart').append('svg')
         .attr('width', properties.width)
         .attr('height', properties.height);
@@ -240,24 +242,24 @@ define(dependencies, function($, d3, properties, parseData, GraphGenerator, Spin
 
       });
       d3.select('#tglWeber').on('click', function() {
-        var tog = d3.select(this);
-        if (tog.text() == 'On') {
-          tog.attr('class', 'btn btn-default').text('Off');
-          d3.select('.digraph')
-            .transition()
-            .delay(500)
-            .attr('transform', 'translate('
-            + (properties.margin.right+properties.margin.left)
-            + ',' + properties.margin.top + ')scale(0.1)');
-        } else {
-          tog.attr('class', 'btn btn-info').text('On');
-          d3.select('.digraph')
-            .transition()
-            .delay(500)
-            .attr('transform', 'translate(550,500)scale(0.1)');
-        }
-        properties.weber = !properties.weber;
-        render();
+        // var tog = d3.select(this);
+        // if (tog.text() == 'On') {
+        //   tog.attr('class', 'btn btn-default').text('Off');
+        //   d3.select('.digraph')
+        //     .transition()
+        //     .delay(500)
+        //     .attr('transform', 'translate('
+        //     + (properties.margin.right+properties.margin.left)
+        //     + ',' + properties.margin.top + ')scale(0.1)');
+        // } else {
+        //   tog.attr('class', 'btn btn-info').text('On');
+        //   d3.select('.digraph')
+        //     .transition()
+        //     .delay(500)
+        //     .attr('transform', 'translate(550,500)scale(0.1)');
+        // }
+        // properties.weber = !properties.weber;
+        // render();
       });
       d3.select('#tglTransition').on('click', function() {
         var tog = d3.select(this);

@@ -37,7 +37,7 @@ define(dependencies, function(d3) {
     graph.tooltip = d3.select('body').append('div').attr('class', 'tooltip').style('opacity', 0);
 
     // bounding box
-    graph.visGroup.append('rect').attr('class', 'frame').attr('width', properties.width).attr('height', properties.height);
+    //graph.visGroup.append('rect').attr('class', 'frame').attr('width', properties.width).attr('height', properties.height);
 
     // scales
     graph.degreeFill = d3.scale.ordinal().domain([1,250]).range(['blue','green','yellow','orange','red']);
@@ -186,8 +186,8 @@ define(dependencies, function(d3) {
 
     graph.title = graph.visGroup.append('text')
       .attr('class', 'graph-title')
-      .attr('x', -3000)
-      .attr('y', -4000)
+      .attr('x', -4000)
+      .attr('y', -2000)
       .text('Title');
 
 
@@ -447,8 +447,13 @@ define(dependencies, function(d3) {
   };
 
   GraphGenerator.prototype.reSizeGraph = function(vis) {
-    // d3 is grabbing the context specific container
-    vis.attr('width', d3.select('#chart-panel')[0][0].clientWidth).attr('height', d3.select('#chart-panel')[0][0].clientHeight);
+    var p = this.properties;
+    p.width = window.innerWidth * 0.9;
+    //p.height = window.innerHeight * 0.9;
+    vis.attr('width', p.width).attr('height', p.height);
+    d3.select('.digraph').attr('transform', 'translate('+
+      (p.width* 0.52)+','+
+      (p.height* 0.65)+')scale(0.1)');
   };
 
   GraphGenerator.prototype.zoom = function() {

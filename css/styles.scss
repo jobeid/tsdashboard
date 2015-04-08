@@ -1,0 +1,87 @@
+$font: Roboto Slab;
+$background: lightsteelblue;
+
+$trail-stroke: #bf4e2d;
+$trail-width: 8px;
+
+
+
+html {
+  font-family: $font;
+  background: $background;
+}
+
+body, div, svg {
+  font-family: $font;
+}
+
+.tri-label {
+  text-anchor: middle;
+  fill-opacity: 0.8;
+  stroke: black;
+  font-size: 500px;
+}
+
+.overlay, .overlay-outer, .sub-overlay {
+  stroke: black;
+  stroke-opacity: 1;
+  stroke-width: 4px;
+}
+
+.trans-axis {
+  stroke: blue;
+}
+
+circle.node {
+  stroke: black;
+  stroke-width: 4px;
+}
+
+circle.node:hover {
+  stroke: red;
+  stroke-width: 8px;
+}
+
+path.link {
+  stroke: steelBlue;
+  stroke-opacity: 0.7;
+  stroke-width: 4px;
+  fill: none;
+}
+
+path.link:hover {
+  stroke: red;
+  stroke-opacity: 1;
+}
+
+div.tooltip {
+    position: absolute;
+    text-align: center;
+    padding: 2px;
+    font: 12px Roboto Slab;
+    background: $background;
+    border: 0px;
+    border-radius: 8px;
+    pointer-events: none;
+}
+
+line.trails {
+  stroke: $trail-stroke;
+  stroke-width: $trail-width;
+  stroke-opacity: 0.8;
+}
+
+.active {
+
+}
+
+.inactive {
+  display: none;
+}
+
+.graph-title {
+  font-size: 400px;
+  text-decoration: underline;
+  fill-opacity: 0.8;
+  fill: $background;
+}
