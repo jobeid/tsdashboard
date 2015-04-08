@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link href='http://fonts.googleapis.com/css?family=Roboto+Slab' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="//rawgithub.com/Caged/d3-tip/master/examples/example-styles.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+  <link rel="stylesheet" type="text/css" href="css/bootstrap-slider.css">
+  <link rel="stylesheet" type="text/css" href="css/musc-vis-style.css">
+  <link rel="stylesheet" type="text/css" href="css/bootstrap-dropdown-checkbox.css">
+  <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.0/css/bootstrap-toggle.min.css" rel="stylesheet">
+  <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+  <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.0/js/bootstrap-toggle.min.js"></script>
+
+  <meta name="viewport" content="width=device-width, initial-scale=0.8, maximum-scale=1, user-scalable=yes">
+
+  <script src="lib/modules/require.js" data-main="src/require-config"></script>
+</head>
+<body>
+    <div class="row">
+        <div class="col-sm-12 text-center">
+                <div class="panel panel-info">
+                    <div class="panel-heading title">
+                      <h1>Translational Science Dashboard</h1>
+                      <h3>The Medical University of South Carolina - Biomedical Informatics Center</h3>
+                    </div>
+                </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-9">
+            <div class="panel panel-info" id="chart-panel">
+                <div class="chart" id="focalPoint"></div>
+            </div>
+        </div>
+        <div class="col-xs-3">
+            <div class="panel panel-info metric-panel">
+                <div class="panel-heading title">Toolbar</div>
+                <div class="panel-body">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <label>Year Slider</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                      <input id="date-slider" type="text" class="span2" value="" data-slider-min="2006" data-slider-max="2013" data-slider-step="1" data-slider-value="[2006,2013]"/>
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="row">
+                            <label>Filters</label>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12">
+                              <div class="mesh-term-filter"></div>
+
+                              <div class="node-filter"></div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12">
+                              <button id="btnApplyFilters" type="button" class="btn btn-info">Apply Filters</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <label>Nodes As: </label>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="btn-group">
+                            <button id="btnNodePerspective" type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-expand="false">
+                            Authors<span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a href="#" id="nodePerspListOne">Departments</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <label>Node Size: </label>
+                    </div>
+                    <div class="col-sm-6">
+                    <div class="btn-group">
+                        <button id="btnNodeSize" type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-expand="false">
+                        Degree<span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a href="#" id="nodeSizeListOne">In Degree</a></li>
+                            <li><a href="#" id="nodeSizeListTwo">Out Degree</a></li>
+<!--                            <li><a href="#" id="nodeSizeListThree">Centrality</a></li> -->
+                            <li><a href="#" id="nodeSizeListFour">Animal</a></li>
+                            <li><a href="#" id="nodeSizeListFive">Human</a></li>
+                            <li><a href="#" id="nodeSizeListSix">Cell</a></li>
+                            <li><a href="#" id="nodeSizeListSeven">Publication Count</a></li>
+                        </ul>
+                    </div>
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <label>Node Color: </label>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="btn-group">
+                            <button id="btnNodeColor" type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-expand="false">
+                            Trans Science<span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a href="#" id="nodeColorListOne">Degree</a></li>
+                                <li><a href="#" id="nodeColorListTwo">In Degree</a></li>
+                                <li><a href="#" id="nodeColorListThree">Out Degree</a></li>
+                                <li><a href="#" id="nodeColorListFour">Animal</a></li>
+                                <li><a href="#" id="nodeColorListFive">Human</a></li>
+                                <li><a href="#" id="nodeColorListSix">Cell</a></li>
+                                <li><a href="#" id="nodeColorListSeven">Publication Count</a></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <label>Edge Color</label>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="btn-group">
+                            <button id="btnEdgeColor" type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-expand="false">
+                            Default Option<span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a href="#" id="edgeColorListOne">Option 1</a></li>
+                                <li><a href="#" id="edgeColorListTwo">Option 2</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <div class="row inactive">
+                    <div class="col-sm-6">
+                        <label>X Axis</label>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="btn-group">
+                            <button id="btnXaxis" type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-expand="false">
+                            Human<span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu">
+
+                              <li><a href="#" id="xAxisListOne">Animal</a></li>
+                              <li><a href="#" id="xAxisListTwo">Cell</a></li>
+                              <li><a href="#" id="xAxisListThree">Animal & Cell</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <div class="row inactive">
+                    <div class="col-sm-6">
+                        <label>Y Axis</label>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="btn-group">
+                            <button id="btnYaxis" type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-expand="false">
+                            Animal & Cell<span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu">
+
+                              <li><a href="#" id="yAxisListOne">Human</a></li>
+                              <li><a href="#" id="yAxisListTwo">Cell</a></li>
+                              <li><a href="#" id="yAxisListThree">Animal</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <div class="row inactive">
+                    <div class="col-sm-6">
+                        <button id="tglWeber" type="button" class="btn btn-info" data-toggle="button">On</button>
+                    </div>
+                    <div class="col-sm-6">
+                        <label>Weber Vis</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <button id="tglEdge" type="button" class="btn btn-default" data-toggle="button">Off</button>
+                    </div>
+                    <div class="col-sm-6">
+                        <label>Show Edges</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <button id="tglTransition" type="button" class="btn btn-default" data-toggle="button">Off</button>
+                    </div>
+                    <div class="col-sm-6">
+                        <label>Transition</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <button id="tglTrails" type="button" class="btn btn-default" data-toggle="button">Off</button>
+                    </div>
+                    <div class="col-sm-6">
+                        <label>Node Trails</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6" id="jitter">
+<!--                        <button id="tglJitter" type="button" class="btn btn-default" data-toggle="button">Off</button>-->
+                    </div>
+<!--                    <div class="col-sm-6">
+                        <label>Jitter</label>
+                    </div> -->
+                </div>
+                <hr>
+
+
+
+            </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-7">
+            <div class="panel panel-info" id="chart-panel">
+                <div class="demo" id="secondary"></div>
+            </div>
+        </div>
+        <div class="col-xs-2">
+
+        </div>
+    </div>
+</body>
+</html>
