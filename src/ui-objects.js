@@ -16,10 +16,12 @@ var dependencies = [
   'graph-generator',
   'spinner',
   'dropdownCheckbox',
-  'slider'
+  'slider',
+  'trend-chart',
+  'ts-seq'
 ];
 
-define(dependencies, function($, d3, properties, parseData, GraphGenerator, Spinner, dropdownCheckbox, Slider) {
+define(dependencies, function($, d3, properties, parseData, GraphGenerator, Spinner, dropdownCheckbox, Slider, TrendChart, TsSeq) {
   var spinnerOpts = {
     lines: 13, // The number of lines to draw
     length: 20, // The length of each line
@@ -135,6 +137,27 @@ define(dependencies, function($, d3, properties, parseData, GraphGenerator, Spin
     properties.ui.render();
   };
 
+  function applyFilters() {
+    properties.mesh = properties.ui.meshTermFilter.dropdownCheckbox('checked');
+    properties.nodeFilter = properties.ui.nodeFilter.dropdownCheckbox('checked');
+
+    var seqDat = new TsSeq();
+
+    for (var i=0; i < 8; i++) {
+      seqDat.aggregate((2006+i), parseData(properties.pubHash.getData({range:{lo:(2006+i),hi:(2006+i)},mesh:properties.mesh}), properties).nodes);
+    }
+
+    if (!properties.timeSeq) {
+      // get each year for the selected partition and send it
+      // into ts-seq
+      // call get on ts-seq and pass to trendchart
+      seqDat.aggregateChange();
+
+      properties.timeSeq = new TrendChart(seqDat.get());
+    }
+    render();
+  };
+
   function updateFilter(filter, items) {
     var newList = [],
       persistent = [],
@@ -195,6 +218,9 @@ define(dependencies, function($, d3, properties, parseData, GraphGenerator, Spin
         .attr('height', properties.height);
 
       // attach behavior to UI interaction
+
+      // FILTER UPDATE
+      d3.select('#btnApplyFilters').on('click', applyFilters);
       // PERSPECTIVE DD
       d3.select('#nodePerspListOne').on('click', updatePerspective);
       // NODE SIZE DD

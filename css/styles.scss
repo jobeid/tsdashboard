@@ -4,6 +4,7 @@ $background: lightsteelblue;
 $trail-stroke: #bf4e2d;
 $trail-width: 8px;
 
+$green-touch: #588e43;
 
 
 html {
@@ -84,4 +85,28 @@ line.trails {
   text-decoration: underline;
   fill-opacity: 0.8;
   fill: $background;
+}
+
+.trend {
+  stroke-opacity: 0.7;
+  stroke-width: 4px;
+  fill: none;
+}
+
+.baseline {
+  stroke: #28281f;
+  stroke-dasharray: 5;
+  stroke-dashoffset: 5;
+}
+
+.A {
+  stroke: #f22127;
+}
+
+.H {
+  stroke: #34d422;
+}
+
+.C {
+  stroke: #2013b7;
 }
