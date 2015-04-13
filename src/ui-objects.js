@@ -16,10 +16,12 @@ var dependencies = [
   'graph-generator',
   'spinner',
   'dropdownCheckbox',
-  'slider'
+  'slider',
+  'trend-chart-2',
+  'trend-map'
 ];
 
-define(dependencies, function($, d3, properties, parseData, GraphGenerator, Spinner, dropdownCheckbox, Slider) {
+define(dependencies, function($, d3, properties, parseData, GraphGenerator, Spinner, dropdownCheckbox, Slider, TrendChart, trendMap) {
   var spinnerOpts = {
     lines: 13, // The number of lines to draw
     length: 20, // The length of each line
@@ -61,14 +63,15 @@ define(dependencies, function($, d3, properties, parseData, GraphGenerator, Spin
 
 
     if (properties.graph) {
-      console.log('graph exists, updating....')
+      // console.log('graph exists, updating....')
       properties.graph.updateData(data);
     } else {
-      console.log('graph DNE, creating....')
+      // console.log('graph DNE, creating....')
 
       properties.graph = new GraphGenerator(data, properties);
       properties.graph.propogateUpdate();
     }
+
     updateFilter('nodeFilter', data.nodes);
     updateFilter('meshTermFilter', data.mesh);
   };
@@ -135,6 +138,40 @@ define(dependencies, function($, d3, properties, parseData, GraphGenerator, Spin
     properties.ui.render();
   };
 
+  function applyFilters() {
+    properties.mesh = properties.ui.meshTermFilter.dropdownCheckbox('checked');
+    properties.nodeFilter = properties.ui.nodeFilter.dropdownCheckbox('checked');
+
+    render();
+    calcTrendData(showTrends);
+  };
+
+  function calcTrendData(callback) {
+    trendMap.clear();
+
+    for (var i=0; i < 7; i++) {
+      trendMap.addData((2006+i).toFixed(), parseData(properties.pubHash.getData({range:{lo:(2006+i),hi:(2006+i)},mesh:properties.mesh}), properties).nodes, null);
+    }
+    properties.trendData = trendMap.addData('2013', parseData(properties.pubHash.getData({range:{lo:2013,hi:2013},mesh:properties.mesh}), properties).nodes, trendMap.aggregate);
+    callback();
+  };
+
+  function showTrends() {
+  
+    if (properties.aTrend) {
+      properties.aTrend.updateData(properties.trendData.A);
+      properties.aTrend.propogateUpdate();
+      properties.cTrend.updateData(properties.trendData.C);
+      properties.cTrend.propogateUpdate();
+      properties.hTrend.updateData(properties.trendData.H);
+      properties.hTrend.propogateUpdate();
+    } else {
+      properties.aTrend = new TrendChart('A', properties.trendData.A);
+      properties.cTrend = new TrendChart('C', properties.trendData.C);
+      properties.hTrend = new TrendChart('H', properties.trendData.H);
+    }
+  }
+
   function updateFilter(filter, items) {
     var newList = [],
       persistent = [],
@@ -195,6 +232,9 @@ define(dependencies, function($, d3, properties, parseData, GraphGenerator, Spin
         .attr('height', properties.height);
 
       // attach behavior to UI interaction
+
+      // FILTER UPDATE
+      d3.select('#btnApplyFilters').on('click', applyFilters);
       // PERSPECTIVE DD
       d3.select('#nodePerspListOne').on('click', updatePerspective);
       // NODE SIZE DD
@@ -290,5 +330,7 @@ define(dependencies, function($, d3, properties, parseData, GraphGenerator, Spin
     this.updatePerspective = updatePerspective;
     this.transition = transition;
     this.updateFilter = updateFilter;
+    this.calcTrendData = calcTrendData;
+    this.showTrends = showTrends;
   }
 });

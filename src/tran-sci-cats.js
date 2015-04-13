@@ -7,6 +7,7 @@
 */
 
 'use strict';
+
 define(function() {
   return function() {
     this.A = 0;

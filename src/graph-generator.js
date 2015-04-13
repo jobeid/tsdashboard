@@ -40,8 +40,8 @@ define(dependencies, function(d3) {
     //graph.visGroup.append('rect').attr('class', 'frame').attr('width', properties.width).attr('height', properties.height);
 
     // scales
-    graph.degreeFill = d3.scale.ordinal().domain([1,250]).range(['blue','green','yellow','orange','red']);
-    graph.degreeScale = d3.scale.linear().domain([1,25]).range([10,60]).clamp(true);
+    graph.heatFill = d3.scale.linear().range(['gray','red']);
+    graph.degreeScale = d3.scale.linear().range([10,60]).clamp(true);
     graph.tsFill = d3.scale.linear().domain([0,1]).range([10,255]).clamp(true);
 
     // x / y scales
@@ -206,6 +206,25 @@ define(dependencies, function(d3) {
       )
       .range([20,100]).clamp(true);
 
+    graph.heatFill.domain(d3.extent(graph.data.nodes, function(d) {
+      if(graph.properties.nodeColor == 'Degree') {
+        return d.inDegree+d.outDegree;
+      }
+      if(graph.properties.nodeColor == 'Out Degree') {
+        return d.outDegree;
+      }
+      if(graph.properties.nodeColor == 'In Degree') {
+        return d.inDegree;
+      }
+      if(graph.properties.nodeColor == 'Publication Count') {
+        return d.pubCt;
+      }
+
+    }));
+
+    graph.degreeScale.domain(d3.extent(graph.data.nodes, function(d) {
+      return d.inDegree + d.outDegree;
+    }));
 
     // UPDATE TITLE
     graph.title.text(function() {
@@ -370,16 +389,16 @@ define(dependencies, function(d3) {
           return 'RGB('+graph.tsFill(d.ts.A).toFixed()+','+graph.tsFill(d.ts.H).toFixed()+','+graph.tsFill(d.ts.C).toFixed()+')';
         }
         if(graph.properties.nodeColor == 'Degree') {
-          return (d.data.hasOwnProperty('pmid')) ? graph.fill(d.inDegree): graph.fill(d.inDegree+d.outDegree);
+          return (d.data.hasOwnProperty('pmid')) ? graph.heatFill(d.inDegree): graph.heatFill(d.inDegree+d.outDegree);
         }
         if(graph.properties.nodeColor == 'Out Degree') {
-          return graph.fill(d.outDegree);
+          return graph.heatFill(d.outDegree);
         }
         if(graph.properties.nodeColor == 'In Degree') {
-          return graph.fill(d.inDegree);
+          return graph.heatFill(d.inDegree);
         }
         if(graph.properties.nodeColor == 'Publication Count') {
-          return graph.fill(d.pubCt);
+          return graph.heatFill(d.pubCt);
         }
 
       })

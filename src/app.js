@@ -46,7 +46,7 @@ require(dependencies, function(queue, d3, ui) {
   };
 
   function initialize() {
-    console.log(app.properties.pubHash);
+    //console.log(app.properties.pubHash);
     app.init();
     app.render();
     finishLoad();
@@ -71,11 +71,16 @@ require(dependencies, function(queue, d3, ui) {
       .defer(loadMesh, './dat/musc_csv/pubMeshDat2011.csv')
       .defer(loadMesh, './dat/musc_csv/pubMeshDat2012.csv')
       .defer(loadMesh, './dat/musc_csv/pubMeshDat2013.csv')
-      .awaitAll(reportOnRequest);
+      .awaitAll(reportFinal);
 
 
     function reportOnRequest() {
-      console.log('Queue has loaded all files...');
+      console.log('Queue has loaded all author files...');
+    };
+
+    function reportFinal() {
+      console.log('Queue has loaded all mesh files, file loading complete...');
+      app.calcTrendData(app.showTrends);
     }
   }
 
