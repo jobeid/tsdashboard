@@ -16,7 +16,10 @@ define(dependencies, function(d3, PubHash) {
     pubHash: new PubHash(),
     svg: null,
     graph: null,
-    timeSeq: null,
+    trendData: null,
+    aTrend: null,
+    hTrend: null,
+    cTrend: null,
     transition: null,
     transform: null,
     height: 600, // this will need to be dynamically updated
