@@ -209,8 +209,124 @@
           <div class="panel-heading text-center">
             <h2>Project Information</h2>
           </div>
+          <div class="panel-body article">
+            <div class="container-fluid">
+              <!-- WHO -->
+              <div class="row">
+                <div class="col-sm-12 col-md-3 col-lg-3">
+                  <div class="container-fluid">
+                    <!-- MUSC AND BMIC LOGOS -->
+                    <div class="row">
+                      <div class="col-sm-12 col-md-12 col-lg-12">
+                        <img alt="MUSC" src="./dat/img/musc_logo.gif">
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-sm-12 col-md-12 col-lg-12">
+                        <img alt="BMIC" src="./dat/img/BMIC_icon.png">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-sm-12 col-md-9 col-lg-9">
+                  <p>
+                    The translational science dashboard has been an evolving project since January of this year.  This project
+                    has developed under the direction of the Biomedical Informatics Center at the Medical University of South
+                    Carolina, with the cooperation of the Department of Data Science at College of Charleston.
+                  </p>
+                </div>
+              </div>
+              <!-- THE METHOD -->
+              <div class="row">
+                <div class="col-sm-12 col-md-12 col-lg-12">
+                  <h3 class="text-center"><b>The Method</b></h3>
+                  <p>
+                    From the start, this project seeked to leverage MUSC's participation in Open Linked Data.  All data utilized is available
+                    via the MUSC SPARQL endpoint located <a target="_new" href="https://profiles.healthsciencessc.org/ProfilesSPARQLAPI/ProfilesSPARQLAPI.svc/Search">here</a>.
+                    Then endpoint can be accessed with SPARQL queries conforming to the <a target="_new" href="https://wiki.duraspace.org/display/VIVO/VIVO-ISF+Ontology">VIVO</a> ontology.
+                    The following is an example query for gathering author and publication identification data for 2006:
+                  </p>
+                  <br>
+                  <pre><code>
+                      PREFIX  cat:  <http://profiles.catalyst.harvard.edu/ontology/prns#>
+                      PREFIX  foaf: <http://xmlns.com/foaf/0.1/>
+                      PREFIX  purl: <http://purl.org/ontology/bibo/>
+                      PREFIX  xsd:  <http://www.w3.org/2001/XMLSchema#>
+                      PREFIX  core: <http://vivoweb.org/ontology/core#>
+
+                      SELECT ?year ?pmid ?author
+                      WHERE
+                      {
+                        ?auth cat:fullName ?author.
+                        ?auth core:authorInAuthorship ?publication.
+                        ?publication core:linkedInformationResource ?details.
+                        ?details purl:pmid ?pmid.
+                        ?details cat:publicationDate ?year.
+                    FILTER ( ( ?year> "2006-01-01T00:00:00Z") &&( ?year< "2006-12-31T00:00:00Z") )
+                    } ORDER BY ?year ?pmid
+                  </code></pre>
+                  <br>
+                  <p>
+                  The primary visualization utilizes a tertiary plot and <a href="./dat/pdf/Weber.pdf"><i>Weber's</i></a> method of mapping publications to
+                  three general areas of research: <strong>H</strong>uman, <strong>A</strong>nimals and complex organisms, or <strong>C</strong>ells and molecules.
+                  By examining the sub MeSH tree numbers of the MeSh terms associated with a given publication, MeSH terms are grouped into one of these three categories.
+                  Once these markers are identified, the proportions of each area are calculated for the given publication.
+                  </p>
+                  <p>
+                  These values are then aggregated as publications grouped by author, represented by nodes in the tertiary plot above.  The aggregated values, now
+                  representative of what percentage of the author's work falls into the given category, are then used to determine the placement of the node on the tertiary plot.
+                  By treating each value as the magnitude of a vector from the tertiary's centroid, to the category the value represents.  Once the vectors of the node are computed
+                  they are summed, resulting in the coordinates of the node.
+                  </p>
+                  <p>
+                  With the implementation of this method we can view the pool of researchers at the institute in context of the areas their published is classified.
+                  The shift towards and away from given areas of research can also be viewed, to show how the group moves over the time period 2006-2013.  By examining
+                  the set of authors being displayed, we are able to track their movements in respect to their changing distance from the three areas of research.  When
+                  the movement is aggregated the trends of movement can be visualized.  The trend time sequences display movement trends for the set of authors displayed
+                  in the tertiary.  Applying filters will directly affect the trend aggregation for these visualizations.  By tracking the type of movement, positive being
+                  movement towards the category and negative the opposite, the proportion of authors moving towards versus away in a category can be calculated.
+                  </p>
+                </div>
+              </div>
+              <!-- THE FRAMEWORK
+              <div class="row">
+                <div class="col-sm-12 col-md-12 col-lg-12">
+                  <h3 class="text-center"><b>The Framework</b></h3>
+                  <p>
+                    requireJS
+
+                    D3.js
+
+                    KarmaJS+Jade
+
+                  </p>
+                </div>
+              </div>  -->
+
+              <!-- END PROJECT INFO BODY -->
+            </div>
+          </div>
+        </div>
+
+        <!-- ACKNOWLEGDEMENTS-->
+        <div class="panel panel-info">
+          <div class="panel-heading">
+            <h3 class="text-center"><b>Acknowledgements</b></h3>
+          </div>
           <div class="panel-body">
-            <p>who what why and links...</p>
+            <p>
+              <strong>Principal Investigator:</strong> <a target="_new" href="http://academicdepartments.musc.edu/psychiatry/faculty/obeidj.htm">Dr. Jihad Obeid Medical</a>, University of South Carolina - Biomedical Informatics Center
+            </p>
+            <p>
+              <strong>Principal Investigator:</strong> <a target="_new" href="http://compsci.cofc.edu/about/faculty-staff-listing/anderson-paul.php">Dr. Paul Anderson</a>, College of Charleston - Department of Data Science
+            </p>
+            <p>
+              <strong>Chief Developer:</strong> <a target="_new" href="https://thomasLevans.github.io">Thomas L. Evans</a>, College of Charleston - Department of Computer Science
+            </p>
+            <hr>
+            <p>
+            <i>Special thanks to Tami Crawford, Medical University of South Carolina - Biomedical Informatics Center</i>
+            </p>
           </div>
         </div>
       </div>

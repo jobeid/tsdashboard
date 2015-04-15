@@ -70,7 +70,7 @@ define(dependencies, function(d3) {
       for (var entry in map) {
         if (map.hasOwnProperty(entry)) {
           for (var i = 2007; i < 2014; i++) {
-            var pre = (i-1).toFixed(), post = i.toFixed();
+            var pre = 2006, post = i.toFixed();
             if (map[entry][pre] && map[entry][post]) {
 
               hash[post].A[check(map[entry][pre].A, map[entry][post].A)] += 1;
