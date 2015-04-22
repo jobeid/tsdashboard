@@ -47,8 +47,8 @@ define(function() {
 
     this.aggregateChange = function() {
       var that = this;
-      for (var i = 2006; i < 2013; i++) {
-        that.percentChange((i).toFixed(), (i+1).toFixed());
+      for (var i = 2007; i < 2014; i++) {
+        that.percentChange('2006', (i).toFixed());
       }
     };
 

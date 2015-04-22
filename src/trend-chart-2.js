@@ -127,7 +127,7 @@ define(dependencies, function(d3) {
 
   TrendChart.prototype.updateData = function(raw) {
     var graph = this;
-    
+
     graph.data.splice(0, graph.data.length);
     raw.forEach(function(d) {
       graph.data.push(d);
