@@ -17,8 +17,8 @@ require(dependencies, function(queue, d3, ui) {
   var app = new ui();
 
   queue(1)
-    .defer(loadPub, './dat/musc_csv/pubAuthDat2006.csv')
-    .defer(loadMesh, './dat/musc_csv/pubMeshDat2006.csv')
+    .defer(loadPub, './dat/musc_csv/auth/pubAuthDat2006.csv')
+    .defer(loadMesh, './dat/musc_csv/mesh/pubMeshDat2006alpha.csv')
     .awaitAll(initialize);
 
   function loadPub(file, callback) {
@@ -49,28 +49,29 @@ require(dependencies, function(queue, d3, ui) {
     //console.log(app.properties.pubHash);
     app.init();
     app.render();
+    console.log(app);
     finishLoad();
   }
 
   function finishLoad() {
     queue(1)
-      .defer(loadPub, './dat/musc_csv/pubAuthDat2007.csv')
-      .defer(loadPub, './dat/musc_csv/pubAuthDat2008.csv')
-      .defer(loadPub, './dat/musc_csv/pubAuthDat2009.csv')
-      .defer(loadPub, './dat/musc_csv/pubAuthDat2010.csv')
-      .defer(loadPub, './dat/musc_csv/pubAuthDat2011.csv')
-      .defer(loadPub, './dat/musc_csv/pubAuthDat2012.csv')
-      .defer(loadPub, './dat/musc_csv/pubAuthDat2013.csv')
+      .defer(loadPub, './dat/musc_csv/auth/pubAuthDat2007.csv')
+      .defer(loadPub, './dat/musc_csv/auth/pubAuthDat2008.csv')
+      .defer(loadPub, './dat/musc_csv/auth/pubAuthDat2009.csv')
+      .defer(loadPub, './dat/musc_csv/auth/pubAuthDat2010.csv')
+      .defer(loadPub, './dat/musc_csv/auth/pubAuthDat2011.csv')
+      .defer(loadPub, './dat/musc_csv/auth/pubAuthDat2012.csv')
+      .defer(loadPub, './dat/musc_csv/auth/pubAuthDat2013.csv')
       .awaitAll(reportOnRequest);
 
     queue(1)
-      .defer(loadMesh, './dat/musc_csv/pubMeshDat2007.csv')
-      .defer(loadMesh, './dat/musc_csv/pubMeshDat2008.csv')
-      .defer(loadMesh, './dat/musc_csv/pubMeshDat2009.csv')
-      .defer(loadMesh, './dat/musc_csv/pubMeshDat2010.csv')
-      .defer(loadMesh, './dat/musc_csv/pubMeshDat2011.csv')
-      .defer(loadMesh, './dat/musc_csv/pubMeshDat2012.csv')
-      .defer(loadMesh, './dat/musc_csv/pubMeshDat2013.csv')
+      .defer(loadMesh, './dat/musc_csv/mesh/pubMeshDat2007alpha.csv')
+      .defer(loadMesh, './dat/musc_csv/mesh/pubMeshDat2008alpha.csv')
+      .defer(loadMesh, './dat/musc_csv/mesh/pubMeshDat2009alpha.csv')
+      .defer(loadMesh, './dat/musc_csv/mesh/pubMeshDat2010alpha.csv')
+      .defer(loadMesh, './dat/musc_csv/mesh/pubMeshDat2011alpha.csv')
+      .defer(loadMesh, './dat/musc_csv/mesh/pubMeshDat2012alpha.csv')
+      .defer(loadMesh, './dat/musc_csv/mesh/pubMeshDat2013alpha.csv')
       .awaitAll(reportFinal);
 
 
