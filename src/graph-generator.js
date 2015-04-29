@@ -27,7 +27,7 @@ define(dependencies, function(d3) {
       .append('g')
       .attr('clip-path', 'url(#clipBox)');
     graph.fill = d3.scale.category20();
-
+    console.log(data);
     graph.labels = [
       {label:'C', x:0, y:-3000},
       {label:'A', x:-3000, y:1750},
@@ -348,7 +348,7 @@ define(dependencies, function(d3) {
     graph.vertices
       .on('mouseover', function(d) {
         if (d.active) {
-
+          //console.log(d);
           var label = (d.data.name||d.data.pmid);
           graph.tooltip.transition().duration(200).style('opacity', 0.8);
           graph.tooltip.html('<h4>'+
