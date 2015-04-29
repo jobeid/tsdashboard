@@ -17,11 +17,10 @@ var dependencies = [
   'spinner',
   'dropdownCheckbox',
   'slider',
-  'trend-chart-2',
-  'trend-map'
+  'heat-map'
 ];
 
-define(dependencies, function($, d3, properties, parseData, GraphGenerator, Spinner, dropdownCheckbox, Slider, TrendChart, trendMap) {
+define(dependencies, function($, d3, properties, parseData, GraphGenerator, Spinner, dropdownCheckbox, Slider, heatmap) {
   var spinnerOpts = {
     lines: 13, // The number of lines to draw
     length: 20, // The length of each line
@@ -143,34 +142,107 @@ define(dependencies, function($, d3, properties, parseData, GraphGenerator, Spin
     properties.nodeFilter = properties.ui.nodeFilter.dropdownCheckbox('checked');
 
     render();
-    calcTrendData(showTrends);
+    //calcTrendData(showTrends);
   };
 
-  function calcTrendData(callback) {
-    trendMap.clear();
+  function renderHeatMap() {
+    var pids = [],
+      cohort = {'2006':[]},
+      densities = {},
+      dat = [],
+      raw = parseData(properties.pubHash.getData({range:{lo:2006,hi:2006},mesh:properties.mesh}), properties).nodes;
 
-    for (var i=0; i < 7; i++) {
-      trendMap.addData((2006+i).toFixed(), parseData(properties.pubHash.getData({range:{lo:(2006+i),hi:(2006+i)},mesh:properties.mesh}), properties).nodes, null);
+    var lines = [
+        function(x) { return -1.52*x-2325; },
+        function(x) { return -1.52*x-900; },
+        function(x) { return -1.52*x-187.5; },
+        function(x) { return -1.52*x+525; },
+        function(x) { return -1.52*x+1950; },
+        function(x) { return -1.52*x+3375; },
+        function(x) { return -1.52*x+4800; }
+    ];
+
+    //
+    // raw.forEach(function(node) {
+    //   if ((lines[1](node.coors.x) > node.coors.y) || (Number(node.ts.H)<0.2)) {
+    //     pids.push(node.data.pid);
+    //     cohort['2006'].push(node);
+    //   }
+    // });
+
+    raw.forEach(function(node) {
+      if (lines[2](node.coors.x) > node.coors.y) {
+        pids.push(node.data.pid);
+        cohort['2006'].push(node);
+      }
+    });
+
+    for (var i=2007; i<2014; i++) {
+      raw = parseData(properties.pubHash.getData({range:{lo:i,hi:i},mesh:properties.mesh}), properties).nodes;
+      cohort[i] = [];
+      raw.forEach(function(node) {
+        if (pids.indexOf(node.data.pid) != -1) {
+          cohort[i].push(node);
+        }
+      });
     }
-    properties.trendData = trendMap.addData('2013', parseData(properties.pubHash.getData({range:{lo:2013,hi:2013},mesh:properties.mesh}), properties).nodes, trendMap.aggregate);
-    callback();
+
+    for (var year in cohort) {
+      if (cohort.hasOwnProperty(year)) {
+        densities[year] = [0,0,0,0,0,0,0];
+        cohort[year].forEach(function(d) {
+          densities[year][calcZone(d.coors)] += 1;
+        });
+        var z = 0;
+        densities[year].forEach(function(d) {
+          dat.push({x:z,y:year,d:d})
+          z++;
+        });
+      }
+    }
+
+    console.log(cohort);
+    console.log(densities);
+
+
+    new heatmap(dat);
+
+    function calcZone(coors) {
+
+      for (var i=0; i<lines.length; i++) {
+        if (lines[i](coors.x) > coors.y) {
+          return i;
+        }
+      }
+      return lines.length;
+    };
   };
 
-  function showTrends() {
-  
-    if (properties.aTrend) {
-      properties.aTrend.updateData(properties.trendData.A);
-      properties.aTrend.propogateUpdate();
-      properties.cTrend.updateData(properties.trendData.C);
-      properties.cTrend.propogateUpdate();
-      properties.hTrend.updateData(properties.trendData.H);
-      properties.hTrend.propogateUpdate();
-    } else {
-      properties.aTrend = new TrendChart('A', properties.trendData.A);
-      properties.cTrend = new TrendChart('C', properties.trendData.C);
-      properties.hTrend = new TrendChart('H', properties.trendData.H);
-    }
-  }
+  // function calcTrendData(callback) {
+  //   trendMap.clear();
+  //
+  //   for (var i=0; i < 7; i++) {
+  //     trendMap.addData((2006+i).toFixed(), parseData(properties.pubHash.getData({range:{lo:(2006+i),hi:(2006+i)},mesh:properties.mesh}), properties).nodes, null);
+  //   }
+  //   properties.trendData = trendMap.addData('2013', parseData(properties.pubHash.getData({range:{lo:2013,hi:2013},mesh:properties.mesh}), properties).nodes, trendMap.aggregate);
+  //   callback();
+  // };
+  //
+  // function showTrends() {
+  //
+  //   if (properties.aTrend) {
+  //     properties.aTrend.updateData(properties.trendData.A);
+  //     properties.aTrend.propogateUpdate();
+  //     properties.cTrend.updateData(properties.trendData.C);
+  //     properties.cTrend.propogateUpdate();
+  //     properties.hTrend.updateData(properties.trendData.H);
+  //     properties.hTrend.propogateUpdate();
+  //   } else {
+  //     properties.aTrend = new TrendChart('A', properties.trendData.A);
+  //     properties.cTrend = new TrendChart('C', properties.trendData.C);
+  //     properties.hTrend = new TrendChart('H', properties.trendData.H);
+  //   }
+  // };
 
   function updateFilter(filter, items) {
     var newList = [],
@@ -330,7 +402,8 @@ define(dependencies, function($, d3, properties, parseData, GraphGenerator, Spin
     this.updatePerspective = updatePerspective;
     this.transition = transition;
     this.updateFilter = updateFilter;
-    this.calcTrendData = calcTrendData;
-    this.showTrends = showTrends;
+    this.renderHeatMap = renderHeatMap;
+    // this.calcTrendData = calcTrendData;
+    // this.showTrends = showTrends;
   }
 });

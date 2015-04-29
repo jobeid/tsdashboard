@@ -81,7 +81,8 @@ require(dependencies, function(queue, d3, ui) {
 
     function reportFinal() {
       console.log('Queue has loaded all mesh files, file loading complete...');
-      app.calcTrendData(app.showTrends);
+      //app.calcTrendData(app.showTrends);
+      app.renderHeatMap();
     }
   }
 
