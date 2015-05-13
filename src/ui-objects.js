@@ -295,9 +295,9 @@ define(dependencies, function($, d3, properties, parseData, GraphGenerator, Spin
         render();
       });
 
-      properties.transform = 'translate('+
-        (properties.width* 0.52)+','+
-        (properties.height* 0.65)+')scale(0.1)';
+      // properties.transform = 'translate('+
+      //   (properties.width* 0.52)+','+
+      //   (properties.height* 0.65)+')scale(0.1)';
 
       properties.svg = d3.select('.chart').append('svg')
         .attr('width', properties.width)

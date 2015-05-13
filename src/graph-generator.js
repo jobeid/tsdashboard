@@ -17,36 +17,52 @@ var dependencies = [
 define(dependencies, function(d3) {
 
   function GraphGenerator(data, properties) {
+
     var graph = this;
+
     graph.data = data || {nodes:[],links:[]};
+
     graph.properties = properties;
-    graph.vis = properties.svg;
-    graph.visGroup = graph.vis.append('g')
-      .attr('transform',properties.transform)
-      .attr('class', 'digraph')
+
+    graph.vis = properties.svg.append('g')
+      // .attr('transform', properties.transform)
+      .call(d3.behavior.zoom().on("zoom", graph.zoom))
       .append('g')
-      .attr('clip-path', 'url(#clipBox)');
+      .attr('class', 'digraph');
+      // .attr('clip-path', 'url(#clipBox)');
+
     graph.fill = d3.scale.category20();
-    console.log(data);
+
     graph.labels = [
       {label:'C', x:0, y:-3000},
       {label:'A', x:-3000, y:1750},
       {label:'H', x:3000, y:1750}
     ];
+
     // tooltip
-    graph.tooltip = d3.select('body').append('div').attr('class', 'tooltip').style('opacity', 0);
+    graph.tooltip = d3.select('body')
+      .append('div')
+      .attr('class', 'tooltip')
+      .style('opacity', 0);
 
     // bounding box
-    //graph.visGroup.append('rect').attr('class', 'frame').attr('width', properties.width).attr('height', properties.height);
+    graph.vis.append('rect')
+      .attr('class', 'frame')
+      .attr('width', properties.width)
+      .attr('height', properties.height);
 
     // scales
     graph.heatFill = d3.scale.linear().range(['gray','red']);
-    graph.degreeScale = d3.scale.linear().range([10,60]).clamp(true);
-    graph.tsFill = d3.scale.linear().domain([0,1]).range([10,255]).clamp(true);
 
-    // x / y scales
-    graph.xScale = d3.scale.linear().domain([0, 100]).range([0, (graph.properties.width * 6.5)]).nice();
-    graph.yScale = d3.scale.linear().domain([0, 100]).range([((graph.properties.height)* 6.5), 0]).nice();
+    graph.degreeScale = d3.scale.linear()
+      .range([10,60])
+      .clamp(true);
+
+    graph.tsFill = d3.scale.linear()
+      .domain([0,1])
+      .range([10,255])
+      .clamp(true);
+
 
 
     // key function
@@ -79,72 +95,23 @@ define(dependencies, function(d3) {
 
     // x map function
     graph.xMap = function(d) {
-      if (!graph.properties.weber) {
-        var x;
-        if (graph.properties.xAxis == 'Animal & Cell') {
-          x = Number(d.Animal) + Number(d.Cell);
-        } else {
-          x = d[graph.properties.xAxis];
-        }
-        return graph.xScale(x * 100);
-      } else {
-        return d.coors.x;
-      }
+      return d.coors.x;
     }
 
     // y map function
     graph.yMap = function(d) {
-      if (!graph.properties.weber) {
-        var y;
-        if (graph.properties.yAxis == 'Animal & Cell') {
-          y = Number(d.Animal) + Number(d.Cell);
-        } else {
-          y = d[graph.properties.yAxis];
-        }
-        return graph.yScale(y * 100);
-      } else {
-        return d.coors.y;
-      }
+      return d.coors.y;
     }
 
 
     // setup groups for edges and vertices
-    graph.edges = graph.visGroup.append('g').selectAll('g');
-    graph.vertices = graph.visGroup.append('g').selectAll('g');
-    graph.trails = graph.visGroup.append('g').selectAll('g');
-
-    // define markers for edges -- note may have to apply the markers to the
-    // vis before binding it to the context
-    // var arrows = graph.visGroup.append('svg:defs');
-    // arrows.append('svg:marker')
-    //   .attr('id', graph.properties.marker.id)
-    //   .attr('viewBox', graph.properties.marker.view)
-    //   // .attr('refX', function(d) {
-    //   //   return (graph.calcNRad(d) + 5);
-    //   // })
-    //   .attr('refX', graph.properties.marker.rX)
-    //   .attr('refY', graph.properties.marker.rY)
-    //   .attr('markerWidth', graph.properties.marker.width)
-    //   .attr('markerHeight', graph.properties.marker.height)
-    //   .attr('orient', 'auto')
-    //   .attr('class', graph.properties.marker.classString)
-    //   .append('svg:path')
-    //   .attr('d', 'M0,-5L10,0L0,5');
-
-    // attach axii and labels
-    // graph.xAxisG = graph.visGroup.append('g')
-    //   .attr('class', 'axis')
-    //   .attr('transform', 'translate(' + (properties.margin.left - 50) + ',' + (properties.height * 7) + ')');
-    // graph.xAxisG.append('text').attr('class', 'x');
-    // graph.yAxisG =	graph.visGroup.append('g')
-    //   .attr('class', 'axis')
-    //   .attr('transform', 'translate(' + ((properties.margin.left + properties.margin.right) * 2) +',' + (properties.margin.top) + ')');
-    // graph.yAxisG.append('text').attr('class', 'y');
-
+    graph.edges = graph.vis.append('g').selectAll('g');
+    graph.vertices = graph.vis.append('g').selectAll('g');
+    graph.trails = graph.vis.append('g').selectAll('g');
 
 
     // draw labels
-    graph.visGroup.selectAll('.tri-label')
+    graph.vis.selectAll('.tri-label')
       .data(graph.labels).enter()
       .append('text')
       .attr('x', function(d) { return d.x; })
@@ -174,7 +141,7 @@ define(dependencies, function(d3) {
       {x1: 0, y1: 1950, x2: 1875, y2: -875, cssClass:'sub-overlay overlay'},
       {x1: 3750, y1: 1950, x2: -1875, y2: -875, cssClass: 'trans-axis overlay'}];
 
-    graph.visGroup.selectAll('overlay')
+    graph.vis.selectAll('overlay')
       .data(overlay).enter()
       .append('line')
       .attr('x1', function(d){ return d.x1; })
@@ -184,7 +151,7 @@ define(dependencies, function(d3) {
       .attr('class', function(d){ return d.cssClass; });
 
 
-    graph.title = graph.visGroup.append('text')
+    graph.title = graph.vis.append('text')
       .attr('class', 'graph-title')
       .attr('x', -4000)
       .attr('y', -2000)
@@ -192,15 +159,16 @@ define(dependencies, function(d3) {
 
 
 
-    window.onresize = function() {
-      graph.reSizeGraph(graph.vis);
-    }
+    // window.onresize = function() {
+    //   graph.reSizeGraph(graph.vis);
+    // }
   }; // END OBJECT CONSTRUCTOR
 
 
 
   GraphGenerator.prototype.propogateUpdate = function() {
     var graph = this;
+
     graph.eigenScale = d3.scale.linear().domain(
         d3.extent(graph.data.nodes, function(d){ return d.eigen; })
       )
@@ -234,30 +202,6 @@ define(dependencies, function(d3) {
         return graph.properties.range.lo + "-" + graph.properties.range.hi;
       }
     });
-
-    // UPDATE AXII
-    // graph.xAxis = d3.svg.axis().scale(graph.xScale).orient('bottom');
-    // graph.xAxisG
-    //   .call(graph.xAxis);
-    // d3.selectAll('text.x')
-    //   .attr('x', (graph.properties.width/2))
-    //   .attr('y', 30)
-    //   .attr('dy', '.71em')
-    //   .attr('class', 'x title-axis')
-    //   .style('text-anchor', 'middle')
-    //   .text(function() { return graph.properties.xAxis; });
-    // graph.yAxis = d3.svg.axis().scale(graph.yScale).orient('left');
-    // graph.yAxisG
-    //   .call(graph.yAxis);
-    // d3.selectAll('text.y')
-    //   .attr('x', ((graph.properties.height - graph.properties.margin.bottom) / 2) * -1)
-    //   .attr('y', -60)
-    //   .attr('dy', '.71em')
-    //   .attr('transform', 'rotate(-90)')
-    //   .attr('class', 'y title-axis')
-    //   .style('text-anchor', 'middle')
-    //   .text(function() { return graph.properties.yAxis; });
-
 
 
     // // // EDGES
@@ -416,14 +360,6 @@ define(dependencies, function(d3) {
     // // remove old
     graph.vertices.exit().transition().remove();
     graph.properties.previous = graph.data.nodes.slice(0);
-
-    // if (!graph.properties.weber) {
-    //   d3.selectAll('.axis').style('stroke-opacity', 1);
-    //   d3.selectAll('.overlay').style('stroke-opacity', 0);
-    // } else {
-    //   d3.selectAll('.axis').style('stroke-opacity', 0);
-    //   d3.selectAll('.overlay').style('stroke-opacity', 1);
-    // }
 
     return true;
 

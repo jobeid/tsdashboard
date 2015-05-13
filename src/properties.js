@@ -51,8 +51,6 @@ define(dependencies, function(d3, PubHash) {
     Authors: true,
     Departments: false,
     Trails: false,
-    xAxis: 'Human',
-    yAxis: 'Animal & Cell',
     range: {
       lo: 2006,
       hi: 2006
