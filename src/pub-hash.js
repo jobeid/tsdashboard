@@ -16,7 +16,18 @@ define(dependencies, function(Author, Publication) {
 
   var PubHash = function() {
     this.publications = {};
-    this.authors = {}
+    this.authors = {};
+    this.meshTrends = {
+      '2006':{},
+      '2007':{},
+      '2008':{},
+      '2009':{},
+      '2010':{},
+      '2011':{},
+      '2012':{},
+      '2013':{},
+      '2014':{}
+    };
   }
 
   // Load the hashes...
@@ -72,6 +83,12 @@ define(dependencies, function(Author, Publication) {
   				pub.meshNums.push({number:row.meshTreeNumber,term:pub.mesh.indexOf(row.mesh)});
   				var t = this.translateMeshNum(row.meshTreeNumber);
 
+          if (this.meshTrends[row.year.split('-')[0]][row.meshTreeNumber]) {
+            this.meshTrends[row.year.split('-')[0]][row.meshTreeNumber]++;
+          } else {
+            this.meshTrends[row.year.split('-')[0]][row.meshTreeNumber] = 1;
+          }
+
   				if (t != '?') {
   					pub.ts[t]++;
 
@@ -82,6 +99,7 @@ define(dependencies, function(Author, Publication) {
   			}
       }
     }
+
     return true;
   };
 
