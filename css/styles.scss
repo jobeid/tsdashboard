@@ -20,13 +20,13 @@ body, div, svg {
   text-anchor: middle;
   fill-opacity: 0.8;
   stroke: black;
-  font-size: 500px;
+  font-size: 12px;
 }
 
-.overlay, .overlay-outer, .sub-overlay {
+.overlay {
   stroke: black;
   stroke-opacity: 1;
-  stroke-width: 4px;
+  stroke-width: 0.5px;
 }
 
 .trans-axis {
@@ -35,12 +35,12 @@ body, div, svg {
 
 circle.node {
   stroke: black;
-  stroke-width: 4px;
+  stroke-width: 0.5px;
 }
 
 circle.node:hover {
   stroke: red;
-  stroke-width: 8px;
+  stroke-width: 1px;
 }
 
 path.link {

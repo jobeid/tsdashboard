@@ -17,16 +17,28 @@ var dependencies = [
 define(dependencies, function(d3) {
 
   function GraphGenerator(data, properties) {
-
+    console.log(data);
     var graph = this;
 
     graph.data = data || {nodes:[],links:[]};
 
     graph.properties = properties;
 
+    graph.xScale = d3.scale.linear()
+      .domain([0, graph.properties.height])
+      .range([0, graph.properties.height]);
+
+    graph.yScale = d3.scale.linear()
+      .domain([0, graph.properties.height])
+      .range([0, graph.properties.height]);
+
+    graph.transform = function transform(d) {
+      return 'translate(' + graph.xScale(d.coors.x) + ',' + graph.yScale(d.coors.y) + ')';
+    }
+
     graph.vis = properties.svg.append('g')
-      // .attr('transform', properties.transform)
-      .call(d3.behavior.zoom().on("zoom", graph.zoom))
+      .attr('transform', 'translate(' + (properties.height / 2) + ',' + (properties.height / 2) + ')')
+      .call(d3.behavior.zoom().x(graph.xScale).y(graph.yScale).scaleExtent([1,8]).on("zoom", zoom))
       .append('g')
       .attr('class', 'digraph');
       // .attr('clip-path', 'url(#clipBox)');
@@ -34,9 +46,9 @@ define(dependencies, function(d3) {
     graph.fill = d3.scale.category20();
 
     graph.labels = [
-      {label:'C', x:0, y:-3000},
-      {label:'A', x:-3000, y:1750},
-      {label:'H', x:3000, y:1750}
+      {label:'C', x:0, y:-1*(properties.width/2)},
+      {label:'A', x:-1*(properties.width/2), y:(properties.width/2)},
+      {label:'H', x:(properties.width/2), y:(properties.width/2)}
     ];
 
     // tooltip
@@ -49,21 +61,21 @@ define(dependencies, function(d3) {
     graph.vis.append('rect')
       .attr('class', 'frame')
       .attr('width', properties.width)
-      .attr('height', properties.height);
+      .attr('height', properties.height)
+      .attr('x', (properties.height/-2))
+      .attr('y', (properties.height/-2));
 
     // scales
     graph.heatFill = d3.scale.linear().range(['gray','red']);
 
     graph.degreeScale = d3.scale.linear()
-      .range([10,60])
+      .range([1,9])
       .clamp(true);
 
     graph.tsFill = d3.scale.linear()
       .domain([0,1])
       .range([10,255])
       .clamp(true);
-
-
 
     // key function
     graph.keyFunc = function keyFunc(d) { return d.data.name; };
@@ -93,16 +105,6 @@ define(dependencies, function(d3) {
       }
     };
 
-    // x map function
-    graph.xMap = function(d) {
-      return d.coors.x;
-    }
-
-    // y map function
-    graph.yMap = function(d) {
-      return d.coors.y;
-    }
-
 
     // setup groups for edges and vertices
     graph.edges = graph.vis.append('g').selectAll('g');
@@ -131,15 +133,14 @@ define(dependencies, function(d3) {
       .text(function(d) { return d.label; });
 
     // draw overlay and hide
-    var overlay = [{x1: 0, y1: -3750, x2: -3750, y2: 1950, cssClass:'overlay-outer overlay'},
-      {x1: 0, y1: -3750, x2: 3750, y2: 1950, cssClass:'overlay-outer overlay'},
-      {x1: -3750, y1: 1950, x2: 3750, y2: 1950, cssClass:'overlay-outer overlay'},
-      {x1: -3750, y1: 1950, x2: 1875, y2: -875, cssClass:'sub-overlay overlay'},
-      {x1: 0, y1: -3750, x2: 0, y2: 1950, cssClass:'sub-overlay overlay'},
-      {x1: -1875, y1: -875, x2: 1875, y2: -875, cssClass:'sub-overlay overlay'},
-      {x1: -1875, y1: -875, x2: 0, y2: 1950, cssClass:'sub-overlay overlay'},
-      {x1: 0, y1: 1950, x2: 1875, y2: -875, cssClass:'sub-overlay overlay'},
-      {x1: 3750, y1: 1950, x2: -1875, y2: -875, cssClass: 'trans-axis overlay'}];
+    var overlay = [
+      {x1: 0, y1: -300, x2: 0, y2: 0, cssClass:'overlay'},
+      {x1: -260, y1: 150, x2: 0, y2: 0, cssClass:'overlay'},
+      {x1: 260, y1: 150, x2: 0, y2: 0, cssClass:'trans-axis overlay'},
+      // {x1: 0, y1: 130, x2: 0, y2: 0, cssClass:'overlay'},
+      {x1: -260, y1: 150, x2: 260, y2: 150, cssClass:'overlay'},
+      {x1: 0, y1: -300, x2: 260, y2: 150, cssClass:'overlay'},
+      {x1: 0, y1: -300, x2: -260, y2: 150, cssClass:'overlay'}];
 
     graph.vis.selectAll('overlay')
       .data(overlay).enter()
@@ -150,6 +151,12 @@ define(dependencies, function(d3) {
       .attr('y2', function(d){ return d.y2; })
       .attr('class', function(d){ return d.cssClass; });
 
+    graph.vis.append('circle')
+      .attr('cx', 0)
+      .attr('cy', 0)
+      .attr('r', 300)
+      .attr('class', 'overlay')
+      .attr('fill', 'none');
 
     graph.title = graph.vis.append('text')
       .attr('class', 'graph-title')
@@ -157,7 +164,10 @@ define(dependencies, function(d3) {
       .attr('y', -2000)
       .text('Title');
 
-
+    function zoom() {
+      d3.selectAll('.overlay').attr('transform', 'translate(' + d3.event.translate + ')scale(' + d3.event.scale + ')');
+      graph.vertices.attr('transform', graph.transform);
+    };
 
     // window.onresize = function() {
     //   graph.reSizeGraph(graph.vis);
@@ -353,8 +363,9 @@ define(dependencies, function(d3) {
           return 'node inactive';
         }
       })
-      .attr('cx', graph.xMap)
-      .attr('cy', graph.yMap);
+      // .attr('cx', graph.xMap)
+      // .attr('cy', graph.yMap);
+      .attr('transform', graph.transform);
 
 
     // // remove old
@@ -409,10 +420,6 @@ define(dependencies, function(d3) {
     d3.select('.digraph').attr('transform', 'translate('+
       (p.width* 0.52)+','+
       (p.height* 0.65)+')scale(0.1)');
-  };
-
-  GraphGenerator.prototype.zoom = function() {
-    d3.select('.digraph').attr('transform', 'translate(' + d3.event.translate + ')scale(' + d3.event.scale + ')');
   };
 
   GraphGenerator.prototype.dragStart = function() {

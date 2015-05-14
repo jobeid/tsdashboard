@@ -79,7 +79,7 @@ define(dependencies, function(ts, vectorize) {
     }
 
     function coordinateNodes(nodes) {
-      var scale = d3.scale.linear().domain([0,1]).range([0,3000]);
+      var scale = d3.scale.linear().domain([0,1]).range([0, (properties.height / 2)]);
 
       nodes.forEach(function(node) {
         var t = {},

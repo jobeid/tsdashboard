@@ -153,13 +153,12 @@ define(dependencies, function($, d3, properties, parseData, GraphGenerator, Spin
       raw = parseData(properties.pubHash.getData({range:{lo:2006,hi:2006},mesh:properties.mesh}), properties).nodes;
 
     var lines = [
-        function(x) { return -1.52*x-2325; },
-        function(x) { return -1.52*x-900; },
-        function(x) { return -1.52*x-187.5; },
-        function(x) { return -1.52*x+525; },
-        function(x) { return -1.52*x+1950; },
-        function(x) { return -1.52*x+3375; },
-        function(x) { return -1.52*x+4800; }
+        function(x) { return -1.52*x-225; },
+        function(x) { return -1.52*x-150; },
+        function(x) { return -1.52*x-75; },
+        function(x) { return -1.52*x+0; },
+        function(x) { return -1.52*x+75; },
+        function(x) { return -1.52*x+150; }
     ];
 
     //
@@ -353,26 +352,7 @@ define(dependencies, function($, d3, properties, parseData, GraphGenerator, Spin
         }
 
       });
-      d3.select('#tglWeber').on('click', function() {
-        // var tog = d3.select(this);
-        // if (tog.text() == 'On') {
-        //   tog.attr('class', 'btn btn-default').text('Off');
-        //   d3.select('.digraph')
-        //     .transition()
-        //     .delay(500)
-        //     .attr('transform', 'translate('
-        //     + (properties.margin.right+properties.margin.left)
-        //     + ',' + properties.margin.top + ')scale(0.1)');
-        // } else {
-        //   tog.attr('class', 'btn btn-info').text('On');
-        //   d3.select('.digraph')
-        //     .transition()
-        //     .delay(500)
-        //     .attr('transform', 'translate(550,500)scale(0.1)');
-        // }
-        // properties.weber = !properties.weber;
-        // render();
-      });
+
       d3.select('#tglTransition').on('click', function() {
         var tog = d3.select(this);
 
@@ -385,6 +365,7 @@ define(dependencies, function($, d3, properties, parseData, GraphGenerator, Spin
           properties.interval = setInterval(transition, 2500);
         }
       });
+
       d3.select('#tglTrails').on('click', function() {
         var tog = d3.select(this);
         if (tog.text() == 'On') {
