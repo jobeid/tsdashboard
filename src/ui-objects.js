@@ -17,10 +17,11 @@ var dependencies = [
   'spinner',
   'dropdownCheckbox',
   'slider',
+  'heat-map-dynamic',
   'heat-map'
 ];
 
-define(dependencies, function($, d3, properties, parseData, GraphGenerator, Spinner, dropdownCheckbox, Slider, heatmap) {
+define(dependencies, function($, d3, properties, parseData, GraphGenerator, Spinner, dropdownCheckbox, Slider, dynamicHeatmap, heatmap) {
   var spinnerOpts = {
     lines: 13, // The number of lines to draw
     length: 20, // The length of each line
@@ -133,6 +134,8 @@ define(dependencies, function($, d3, properties, parseData, GraphGenerator, Spin
       properties.range.lo = 2006;
       properties.range.hi = 2006;
     }
+    properties.dhm.year = properties.range.lo;
+    properties.dhm.propogateUpdate();
     properties.ui.dateSlider.setValue([properties.range.lo,properties.range.hi]);
     properties.ui.render();
   };
@@ -150,7 +153,8 @@ define(dependencies, function($, d3, properties, parseData, GraphGenerator, Spin
       cohort = {'2006':[]},
       densities = {},
       dat = [],
-      raw = parseData(properties.pubHash.getData({range:{lo:2006,hi:2006},mesh:properties.mesh}), properties).nodes;
+      raw = parseData(properties.pubHash.getData({range:{lo:2006,hi:2006},
+        mesh:properties.mesh}), properties).nodes;
 
     var lines = [
         function(x) { return -1.52*x-225; },
@@ -158,21 +162,24 @@ define(dependencies, function($, d3, properties, parseData, GraphGenerator, Spin
         function(x) { return -1.52*x-75; },
         function(x) { return -1.52*x+0; },
         function(x) { return -1.52*x+75; },
-        function(x) { return -1.52*x+150; }
+        function(x) { return -1.52*x+150; },
+        function(x) { return -1.52*x+300; }
     ];
 
-    //
-    // raw.forEach(function(node) {
-    //   if ((lines[1](node.coors.x) > node.coors.y) || (Number(node.ts.H)<0.2)) {
-    //     pids.push(node.data.pid);
-    //     cohort['2006'].push(node);
-    //   }
-    // });
-
+    var that = this;
     raw.forEach(function(node) {
-      if (lines[2](node.coors.x) > node.coors.y) {
+      if (that.properties.cohort.min == 0 &&
+        lines[that.properties.cohort.max](node.coors.x) > node.coors.y) {
+
         pids.push(node.data.pid);
         cohort['2006'].push(node);
+      } else {
+        if (lines[that.properties.cohort.max](node.coors.x) > node.coors.y &&
+          lines[that.properties.cohort.min-1](node.coors.x) < node.coors.y) {
+
+          pids.push(node.data.pid);
+          cohort['2006'].push(node);
+        }
       }
     });
 
@@ -203,8 +210,17 @@ define(dependencies, function($, d3, properties, parseData, GraphGenerator, Spin
     console.log(cohort);
     console.log(densities);
 
+    if (!this.properties.shm) {
+      this.properties.shm = new heatmap();
+    }
 
-    new heatmap(dat);
+    if (!this.properties.dhm) {
+      this.properties.dhm = new dynamicHeatmap();
+    }
+
+    this.properties.dhm.updateData(dat.slice(0,dat.length-1));
+    this.properties.shm.updateData(dat);
+
 
     function calcZone(coors) {
 
@@ -217,31 +233,6 @@ define(dependencies, function($, d3, properties, parseData, GraphGenerator, Spin
     };
   };
 
-  // function calcTrendData(callback) {
-  //   trendMap.clear();
-  //
-  //   for (var i=0; i < 7; i++) {
-  //     trendMap.addData((2006+i).toFixed(), parseData(properties.pubHash.getData({range:{lo:(2006+i),hi:(2006+i)},mesh:properties.mesh}), properties).nodes, null);
-  //   }
-  //   properties.trendData = trendMap.addData('2013', parseData(properties.pubHash.getData({range:{lo:2013,hi:2013},mesh:properties.mesh}), properties).nodes, trendMap.aggregate);
-  //   callback();
-  // };
-  //
-  // function showTrends() {
-  //
-  //   if (properties.aTrend) {
-  //     properties.aTrend.updateData(properties.trendData.A);
-  //     properties.aTrend.propogateUpdate();
-  //     properties.cTrend.updateData(properties.trendData.C);
-  //     properties.cTrend.propogateUpdate();
-  //     properties.hTrend.updateData(properties.trendData.H);
-  //     properties.hTrend.propogateUpdate();
-  //   } else {
-  //     properties.aTrend = new TrendChart('A', properties.trendData.A);
-  //     properties.cTrend = new TrendChart('C', properties.trendData.C);
-  //     properties.hTrend = new TrendChart('H', properties.trendData.H);
-  //   }
-  // };
 
   function updateFilter(filter, items) {
     var newList = [],
@@ -293,16 +284,19 @@ define(dependencies, function($, d3, properties, parseData, GraphGenerator, Spin
         properties.range.hi = d.value[1];
         render();
       });
-
-      // properties.transform = 'translate('+
-      //   (properties.width* 0.52)+','+
-      //   (properties.height* 0.65)+')scale(0.1)';
+      this.cohortSlider = new Slider('#cohort-slider', {});
+      this.cohortSlider.setValue([0,1], true);
+      this.cohortSlider.on('slideStop', function(d) {
+        properties.cohort.min = d.value[0];
+        properties.cohort.max = d.value[1];
+        properties.ui.renderHeatMap();
+      });
 
       properties.svg = d3.select('.chart').append('svg')
         .attr('width', properties.width)
         .attr('height', properties.height);
 
-      // attach behavior to UI interaction
+      // attach behavior to UI
 
       // FILTER UPDATE
       d3.select('#btnApplyFilters').on('click', applyFilters);

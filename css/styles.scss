@@ -20,7 +20,7 @@ body, div, svg {
   text-anchor: middle;
   fill-opacity: 0.8;
   stroke: black;
-  font-size: 12px;
+  font-size: 22px;
 }
 
 .overlay {
@@ -81,7 +81,7 @@ line.trails {
 }
 
 .graph-title {
-  font-size: 400px;
+  font-size: 36px;
   text-decoration: underline;
   fill-opacity: 0.8;
   fill: $background;
@@ -140,4 +140,9 @@ line.trails {
 .frame {
   fill: none;
   pointer-events: all;
+}
+
+.poly {
+  stroke:black;
+  stroke-width: 1px;
 }

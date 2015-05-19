@@ -16,6 +16,8 @@ define(dependencies, function(d3, PubHash) {
     pubHash: new PubHash(),
     svg: null,
     graph: null,
+    dhm: null, // dynamic heat map
+    shm: null, // static heat map
     trendData: null,
     aTrend: null,
     hTrend: null,
@@ -23,10 +25,10 @@ define(dependencies, function(d3, PubHash) {
     transition: null,
     transform: null,
     height: 600, // this will need to be dynamically updated
-    width: window.innerWidth * 0.9, // '' '' '' '' '' ''
+    width: 600, // '' '' '' '' '' ''
     xOffset: 600 / 2, // obsolete?
     yOffset: 600 / 2, // obsolete?
-    nRad: 15, // obsolete?
+    cohort: {min:0,max:1,data:null},
     nodeSize: 'Degree',
     nodeColor: 'Trans Science',
     marker: { // obsolete?

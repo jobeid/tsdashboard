@@ -12,9 +12,9 @@ var dependencies = [
 ];
 
 define(dependencies, function(d3) {
-  function Heatmap(data) {
+  function Heatmap() {
     var graph = this;
-    graph.data = data || {};
+    graph.data = [];
 
     var properties = graph.properties = {height:450, width:d3.select('.heat-map')[0][0].clientWidth};
     graph.vis = d3.select('.heat-map').append('svg')
@@ -24,8 +24,9 @@ define(dependencies, function(d3) {
       .attr('transform', 'translate(75,50)scale(0.8)');
 
     graph.heatFill = d3.scale.linear()
-      .domain(d3.extent(data, function(d) { return d.d; }))
       .range(['lightgray','red']);
+
+    graph.blocks = graph.vis.append('g').selectAll('g');
 
     graph.x = d3.scale.linear()
       .domain([0,7])
@@ -68,10 +69,34 @@ define(dependencies, function(d3) {
       .text('Year')
       .attr('class', 'trend-label');
 
-    graph.blocks = graph.vis.selectAll('.block')
-      .data(graph.data)
-      .enter()
-      .append('rect')
+
+  };
+
+  Heatmap.prototype.updateData = function(data) {
+    var graph = this;
+    console.log(data);
+    // clean old data
+    graph.data.splice(0, graph.data.length);
+
+    // load new data
+    data.forEach(function(d) {
+      graph.data.push(d);
+    });
+
+    // call update
+    graph.propogateUpdate();
+  };
+
+  Heatmap.prototype.propogateUpdate = function() {
+    var graph = this;
+
+    graph.heatFill.domain(d3.extent(graph.data, function(d) { return d.d; }))
+
+    graph.blocks = graph.blocks.data(graph.data);
+
+    graph.blocks.enter().append('rect').attr('class','poly');
+
+    graph.blocks
       .attr('x', function(d) { return graph.x(d.x); })
       .attr('y', function(d) { return graph.y(d.y)-25; })
       .attr('rx', 5)
@@ -79,8 +104,6 @@ define(dependencies, function(d3) {
       .attr('width', 75)
       .attr('height', 50)
       .attr('fill', function(d) { return graph.heatFill(d.d); });
-
-
   };
 
   return Heatmap;

@@ -23,9 +23,18 @@
             <h4>Translational Science Dashboard</h4>
           </div>
 
-          <!-- VIS AREA -->
-          <div class="panel-body chart"></div>
-          <!-- VIS AREA END -->
+          <div class="panel-body">
+            <div class="row">
+              <div class="col-sm-12 col-md-6 col-lg-6">
+                <!-- Weber Vis -->
+                <div class="chart"></div>
+              </div>
+              <div class="col-sm-12 col-md-6 col-lg-6">
+                <!-- dynamic heatmap -->
+                <div class="dynamic-hm"></div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -190,6 +199,13 @@
                   <button id="tglTransition" type="button" class="btn btn-default" data-toggle="button">Off</button>
                 </div>
               </div>
+              <hr>
+              <div class="row">
+                <div class="col-md-12 col-lg-12">
+                  <p>Cohort Selection</p>
+                  <input id="cohort-slider" type="text" class="span2" value="" data-slider-min="0" data-slider-max="6" data-slider-step="1" data-slider-value="[0,1]"/>
+                </div>
+              </div>
             </div> <!-- END MISC OPTS CONTAINER -->
 
           </div>
@@ -315,7 +331,7 @@
           </div>
           <div class="panel-body">
             <p>
-              <strong>Principal Investigator:</strong> <a target="_new" href="http://academicdepartments.musc.edu/psychiatry/faculty/obeidj.htm">Dr. Jihad Obeid Medical</a>, University of South Carolina - Biomedical Informatics Center
+              <strong>Principal Investigator:</strong> <a target="_new" href="http://academicdepartments.musc.edu/psychiatry/faculty/obeidj.htm">Dr. Jihad Obeid</a>, Medical University of South Carolina - Biomedical Informatics Center
             </p>
             <p>
               <strong>Principal Investigator:</strong> <a target="_new" href="http://compsci.cofc.edu/about/faculty-staff-listing/anderson-paul.php">Dr. Paul Anderson</a>, College of Charleston - Department of Data Science

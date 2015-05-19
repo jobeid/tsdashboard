@@ -17,7 +17,7 @@ var dependencies = [
 define(dependencies, function(d3) {
 
   function GraphGenerator(data, properties) {
-    console.log(data);
+
     var graph = this;
 
     graph.data = data || {nodes:[],links:[]};
@@ -37,7 +37,7 @@ define(dependencies, function(d3) {
     }
 
     graph.vis = properties.svg.append('g')
-      .attr('transform', 'translate(' + (properties.height / 2) + ',' + (properties.height / 2) + ')')
+      .attr('transform', 'translate(' + (properties.height / 2) + ',' + ((properties.height / 2) + 50) + ')')
       .call(d3.behavior.zoom().x(graph.xScale).y(graph.yScale).scaleExtent([1,8]).on("zoom", zoom))
       .append('g')
       .attr('class', 'digraph');
@@ -46,9 +46,9 @@ define(dependencies, function(d3) {
     graph.fill = d3.scale.category20();
 
     graph.labels = [
-      {label:'C', x:0, y:-1*(properties.width/2)},
-      {label:'A', x:-1*(properties.width/2), y:(properties.width/2)},
-      {label:'H', x:(properties.width/2), y:(properties.width/2)}
+      {label:'C', x:0, y:-310},
+      {label:'A', x:-280, y:170},
+      {label:'H', x:280, y:170}
     ];
 
     // tooltip
@@ -151,17 +151,10 @@ define(dependencies, function(d3) {
       .attr('y2', function(d){ return d.y2; })
       .attr('class', function(d){ return d.cssClass; });
 
-    graph.vis.append('circle')
-      .attr('cx', 0)
-      .attr('cy', 0)
-      .attr('r', 300)
-      .attr('class', 'overlay')
-      .attr('fill', 'none');
-
     graph.title = graph.vis.append('text')
       .attr('class', 'graph-title')
-      .attr('x', -4000)
-      .attr('y', -2000)
+      .attr('x', -250)
+      .attr('y', -250)
       .text('Title');
 
     function zoom() {
