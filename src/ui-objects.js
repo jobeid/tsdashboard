@@ -224,12 +224,12 @@ define(dependencies, function($, d3, properties, parseData, GraphGenerator, Spin
 
     function calcZone(coors) {
 
-      for (var i=0; i<lines.length; i++) {
+      for (var i=0; i<lines.length-1; i++) {
         if (lines[i](coors.x) > coors.y) {
           return i;
         }
       }
-      return lines.length;
+      return lines.length-1;
     };
   };
 
