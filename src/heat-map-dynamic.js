@@ -35,7 +35,7 @@ define(dependencies, function(d3) {
 
     graph.polys = graph.svg.append('g').selectAll('g');
 
-    graph.tooltip = d3.select('.dynamic-hm')
+    graph.tooltip = d3.select('body')
       .append('div')
       .attr('class', 'tooltip')
       .style('opacity', 0);

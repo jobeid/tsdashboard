@@ -69,7 +69,10 @@ define(dependencies, function(d3) {
       .text('Year')
       .attr('class', 'trend-label');
 
-
+      graph.tooltip = d3.select('body')
+        .append('div')
+        .attr('class', 'tooltip')
+        .style('opacity', 0);
   };
 
   Heatmap.prototype.updateData = function(data) {
@@ -97,12 +100,27 @@ define(dependencies, function(d3) {
     graph.blocks.enter().append('rect').attr('class','poly');
 
     graph.blocks
+      .on('mouseover', function(d) {
+        var label = '<h3>Partition ' + d.x +'</h3><p>Density ' + d.d + ' Authors</p>';
+
+        graph.tooltip.transition().duration(200).style('opacity', 0.8);
+
+        graph.tooltip.html(label)
+          .attr('width', (label.length + 20)+'px')
+          .style('left', d3.event.pageX + 'px')
+          .style('top', (d3.event.pageY - 28) + 'px');
+      })
+      .on('mouseout', function(d) {
+        graph.tooltip.transition().duration(300).style('opacity', 0);
+      })
       .attr('x', function(d) { return graph.x(d.x); })
       .attr('y', function(d) { return graph.y(d.y)-25; })
       .attr('rx', 5)
       .attr('ry', 5)
       .attr('width', 75)
       .attr('height', 50)
+      .transition()
+      .duration(500)
       .attr('fill', function(d) { return graph.heatFill(d.d); });
   };
 
