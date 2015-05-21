@@ -249,13 +249,13 @@ define(dependencies, function(ts, vectorize) {
       tempNodes = departmentNodes;
 
       function getDeptName(author) {
-        var instID = departments.personel[author.data.pid].instID;
-        var depID = departments.personel[author.data.pid].deptID;
+        var instID = properties.deptData.personel[author.data.pid].instID;
+        var depID = properties.deptData.personel[author.data.pid].deptID;
 
         if (instID == 14) {
-          return departments.departmentNames[depID];
+          return properties.deptData.departments[depID];
         } else {
-          return departments.institutions[instID];
+          return properties.deptData.institutions[instID];
         }
       }
     }

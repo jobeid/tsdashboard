@@ -2,7 +2,12 @@ $font: Roboto Slab;
 $background: lightsteelblue;
 
 $trail-stroke: #bf4e2d;
-$trail-width: 8px;
+$trail-width: 0.25px;
+$trail-opacity: 0.5;
+
+$link-stroke: #93d3bc;
+$link-width: 0.25px;
+$link-opacity: 0.5;
 
 $green-touch: #588e43;
 
@@ -44,9 +49,9 @@ circle.node:hover {
 }
 
 path.link {
-  stroke: steelBlue;
-  stroke-opacity: 0.7;
-  stroke-width: 4px;
+  stroke: $link-stroke;
+  stroke-opacity: $link-opacity;
+  stroke-width: $link-width;
   fill: none;
 }
 
@@ -69,7 +74,7 @@ div.tooltip {
 line.trails {
   stroke: $trail-stroke;
   stroke-width: $trail-width;
-  stroke-opacity: 0.8;
+  stroke-opacity: $trail-opacity;
 }
 
 .active {

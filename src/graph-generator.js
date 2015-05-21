@@ -38,12 +38,10 @@ define(dependencies, function(d3) {
 
     graph.vis = properties.svg.append('g')
       .attr('transform', 'translate(' + (properties.height / 2) + ',' + ((properties.height / 2) + 50) + ')')
-      .call(d3.behavior.zoom().x(graph.xScale).y(graph.yScale).scaleExtent([1,8]).on("zoom", zoom))
+      .call(d3.behavior.zoom().x(graph.xScale).y(graph.yScale).scaleExtent([1,16]).on("zoom", zoom))
       .append('g')
       .attr('class', 'digraph');
-      // .attr('clip-path', 'url(#clipBox)');
 
-    graph.fill = d3.scale.category20();
 
     graph.labels = [
       {label:'C', x:0, y:-310},
@@ -66,10 +64,10 @@ define(dependencies, function(d3) {
       .attr('y', (properties.height/-2));
 
     // scales
-    graph.heatFill = d3.scale.linear().range(['gray','red']);
+    graph.heatFill = d3.scale.linear().range(['lightgray','red']);
 
-    graph.degreeScale = d3.scale.linear()
-      .range([1,9])
+    graph.radiusScale = d3.scale.linear()
+      .range([1,10])
       .clamp(true);
 
     graph.tsFill = d3.scale.linear()
@@ -80,8 +78,8 @@ define(dependencies, function(d3) {
     // key function
     graph.keyFunc = function keyFunc(d) { return d.data.name; };
 
-    // r val function
-    graph.rVal = function(d) {
+    // value map function
+    graph.valMap = function(d) {
       if (graph.properties.nodeSize == 'Human') {
         return d.ts.H;
       }
@@ -92,16 +90,16 @@ define(dependencies, function(d3) {
         return d.ts.C;
       }
       if (graph.properties.nodeSize == 'Centrality') {
-        return graph.eigenScale(d.eigen);
+        return d.eigen;
       }
       if (graph.properties.nodeSize == 'Publication Count') {
         return d.pubCt;
       }
 
       if (graph.properties.nodeSize == 'Degree') {
-        return graph.degreeScale((d.data.hasOwnProperty('pmid')) ? d.inDegree: d.inDegree + d.outDegree);
+        return (d.data.hasOwnProperty('pmid')) ? d.inDegree: d.inDegree + d.outDegree;
       } else {
-        return graph.degreeScale((graph.properties.nodeSize == 'In Degree') ? d.inDegree: d.outDegree);
+        return (graph.properties.nodeSize == 'In Degree') ? d.inDegree: d.outDegree;
       }
     };
 
@@ -158,8 +156,19 @@ define(dependencies, function(d3) {
       .text('Title');
 
     function zoom() {
-      d3.selectAll('.overlay').attr('transform', 'translate(' + d3.event.translate + ')scale(' + d3.event.scale + ')');
+      d3.selectAll('.overlay')
+        .attr('transform',
+        'translate(' + d3.event.translate + ')scale(' + d3.event.scale + ')');
+
       graph.vertices.attr('transform', graph.transform);
+
+      d3.selectAll('.link')
+        .attr('transform',
+        'translate(' + d3.event.translate + ')scale(' + d3.event.scale + ')');
+
+      d3.selectAll('.trails')
+        .attr('transform',
+        'translate(' + d3.event.translate + ')scale(' + d3.event.scale + ')');
     };
 
     // window.onresize = function() {
@@ -172,29 +181,19 @@ define(dependencies, function(d3) {
   GraphGenerator.prototype.propogateUpdate = function() {
     var graph = this;
 
+    console.log(graph.data);
+
     graph.eigenScale = d3.scale.linear().domain(
         d3.extent(graph.data.nodes, function(d){ return d.eigen; })
       )
       .range([20,100]).clamp(true);
 
     graph.heatFill.domain(d3.extent(graph.data.nodes, function(d) {
-      if(graph.properties.nodeColor == 'Degree') {
-        return d.inDegree+d.outDegree;
-      }
-      if(graph.properties.nodeColor == 'Out Degree') {
-        return d.outDegree;
-      }
-      if(graph.properties.nodeColor == 'In Degree') {
-        return d.inDegree;
-      }
-      if(graph.properties.nodeColor == 'Publication Count') {
-        return d.pubCt;
-      }
-
+      return graph.valMap(d);
     }));
 
-    graph.degreeScale.domain(d3.extent(graph.data.nodes, function(d) {
-      return d.inDegree + d.outDegree;
+    graph.radiusScale.domain(d3.extent(graph.data.nodes, function(d) {
+      return graph.valMap(d);
     }));
 
     // UPDATE TITLE
@@ -241,55 +240,48 @@ define(dependencies, function(d3) {
       .attr('class', 'node');
 
     // Before vertex-update calculate and animate node trails
-    if (graph.properties.previous.length>0 && graph.properties.Trails) {
-      var tpaths = {};
+    var newPrevious = [],
+      tpaths = [];
 
-      graph.properties.previous.forEach(function(node) {
-        if (tpaths[node.data.name]) {
-          tpaths[node.data.name].x1 = node.coors.x;
-          tpaths[node.data.name].y1 = node.coors.y;
+    graph.data.nodes.forEach(function(node) {
+      if (graph.properties.previous[node.data.name]) {
+
+        tpaths.push({
+          x1:graph.properties.previous[node.data.name].coors.x,
+          y1:graph.properties.previous[node.data.name].coors.y,
+          x2:node.coors.x,
+          y2:node.coors.y,
+          active:node.active
+        });
+      }
+      newPrevious.push(node);
+    });
+
+    graph.properties.previous = d3.map(newPrevious,
+      function(d) { return d.data.name; })['_'];
+
+    graph.trails = graph.trails.data(tpaths);
+
+    graph.trails.enter().append('line')
+      .attr('class', 'trails');
+
+    graph.trails
+      .attr('x1', function(d) { return d.x1; })
+      .attr('y1', function(d) { return d.y1; })
+      .attr('x2', function(d) { return d.x2; })
+      .attr('y2', function(d) { return d.y2; })
+      .attr('stroke-dasharray', (3000 + ', ' + 3000))
+      .attr('stroke-dashoffset', 3000)
+      .attr('class', function(d) {
+        if (d.active && graph.properties.Trails) {
+          return 'trails active';
         } else {
-          tpaths[node.data.name] = {x1:node.coors.x, y1:node.coors.y, x2:null, y2:null, active:null};
+          return 'trails inactive';
         }
-
-      });
-      graph.data.nodes.forEach(function(node) {
-
-        if (tpaths[node.data.name]) {
-          tpaths[node.data.name].x2 = node.coors.x;
-          tpaths[node.data.name].y2 = node.coors.y;
-          tpaths[node.data.name].active = node.active && tpaths[node.data.name].active;
-        } else {
-          tpaths[node.data.name] = {x2:node.coors.x, y2:node.coors.y, x1:null, y1:null, active:node.active};
-        }
-
-      });
-
-      tpaths = d3.map(tpaths).values();
-      graph.trails = graph.trails.data(tpaths);
-
-      graph.trails.enter().append('line')
-        .attr('class', 'trails');
-
-      graph.trails
-        .attr('x1', function(d) { return d.x1; })
-        .attr('y1', function(d) { return d.y1; })
-        .attr('x2', function(d) { return d.x2; })
-        .attr('y2', function(d) { return d.y2; })
-        .attr('stroke-dasharray', (3000 + ', ' + 3000))
-        .attr('stroke-dashoffset', 3000)
-        .attr('class', function(d) {
-          if (d.active) {
-            return 'trails active';
-          } else {
-            return 'trails inactive';
-          }
-        })
-        .transition()
-        .duration(1750)
-        .attr('stroke-dashoffset', 0);
-    }
-
+      })
+      .transition()
+      .duration(1700)
+      .attr('stroke-dashoffset', 0);
 
     // En + U
     graph.vertices
@@ -320,34 +312,14 @@ define(dependencies, function(d3) {
       })
       .transition()
       .duration(1000)
-      .attr('r', graph.rVal)
+      .attr('r', function(d) {
+        return graph.radiusScale(graph.valMap(d));
+      })
       .style('fill', function(d) {
-        if (graph.properties.nodeColor == 'Human') {
-          return 'RGB(0,'+ graph.tsFill(d.ts.H).toFixed() +',0)';
-        }
-        if (graph.properties.nodeColor == 'Animal') {
-          return 'RGB('+ graph.tsFill(d.ts.A).toFixed() +',0,0)';
-        }
-        if (graph.properties.nodeColor == 'Cell') {
-          return 'RGB(0,0,'+ graph.tsFill(d.ts.C).toFixed() +')';
-        }
-
         if(graph.properties.nodeColor == 'Trans Science') {
           return 'RGB('+graph.tsFill(d.ts.A).toFixed()+','+graph.tsFill(d.ts.H).toFixed()+','+graph.tsFill(d.ts.C).toFixed()+')';
         }
-        if(graph.properties.nodeColor == 'Degree') {
-          return (d.data.hasOwnProperty('pmid')) ? graph.heatFill(d.inDegree): graph.heatFill(d.inDegree+d.outDegree);
-        }
-        if(graph.properties.nodeColor == 'Out Degree') {
-          return graph.heatFill(d.outDegree);
-        }
-        if(graph.properties.nodeColor == 'In Degree') {
-          return graph.heatFill(d.inDegree);
-        }
-        if(graph.properties.nodeColor == 'Publication Count') {
-          return graph.heatFill(d.pubCt);
-        }
-
+        return graph.valMap(d);
       })
       .attr('class', function(d) {
         if (d.active) {
@@ -356,14 +328,11 @@ define(dependencies, function(d3) {
           return 'node inactive';
         }
       })
-      // .attr('cx', graph.xMap)
-      // .attr('cy', graph.yMap);
       .attr('transform', graph.transform);
 
 
     // // remove old
     graph.vertices.exit().transition().remove();
-    graph.properties.previous = graph.data.nodes.slice(0);
 
     return true;
 

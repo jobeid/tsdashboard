@@ -80,15 +80,15 @@ define(dependencies, function($, d3, properties, parseData, GraphGenerator, Spin
     var current = d3.select('#btnNodePerspective').text().trim()
     var next = d3.select(this).text().trim();
     d3.select(this).text(current);
-    d3.select('#btnNodePerspective').html(next+uiObjects.span);
+    d3.select('#btnNodePerspective').html(next+span);
     properties.mesh = [];
-    this.meshTermFilter.dropdownCheckbox('reset', []);
+    properties.ui.meshTermFilter.dropdownCheckbox('reset', []);
     properties.nodeFilter = [];
-    this.nodeFilter.dropdownCheckbox('reset', []);
+    properties.ui.nodeFilter.dropdownCheckbox('reset', []);
     properties.previous = [];
     properties[current] = false;
     properties[next] = true;
-    this.render();
+    render();
   };
 
   function updateNodeSize() {
@@ -207,9 +207,6 @@ define(dependencies, function($, d3, properties, parseData, GraphGenerator, Spin
       }
     }
 
-    console.log(cohort);
-    console.log(densities);
-
     if (!this.properties.shm) {
       this.properties.shm = new heatmap();
     }
@@ -311,16 +308,6 @@ define(dependencies, function($, d3, properties, parseData, GraphGenerator, Spin
       d3.select('#nodeSizeListSix').on('click', updateNodeSize);
       d3.select('#nodeSizeListSeven').on('click', updateNodeSize);
 
-      // X AXIS
-      d3.select('#xAxisListOne').on('click', updateXaxis);
-      d3.select('#xAxisListTwo').on('click', updateXaxis);
-      d3.select('#xAxisListThree').on('click', updateXaxis);
-
-      // Y AXIS
-      d3.select('#yAxisListOne').on('click', updateYaxis);
-      d3.select('#yAxisListTwo').on('click', updateYaxis);
-      d3.select('#yAxisListThree').on('click', updateYaxis);
-
       // NODE COLOR DD
       d3.select('#nodeColorListOne').on('click', updateNodeColor);
       d3.select('#nodeColorListTwo').on('click', updateNodeColor);
@@ -369,7 +356,7 @@ define(dependencies, function($, d3, properties, parseData, GraphGenerator, Spin
         } else {
           tog.attr('class', 'btn btn-info').text('On');
           properties.Trails = true;
-
+          d3.selectAll('.trails.inactive').attr('class', 'trails active');
         }
       });
     };

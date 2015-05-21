@@ -77,7 +77,7 @@ define(dependencies, function(d3) {
 
   Heatmap.prototype.updateData = function(data) {
     var graph = this;
-    console.log(data);
+    
     // clean old data
     graph.data.splice(0, graph.data.length);
 
