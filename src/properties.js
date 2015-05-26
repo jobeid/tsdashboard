@@ -33,6 +33,7 @@ define(dependencies, function(d3, PubHash, deptData) {
     cohort: {min:0,max:1,data:null},
     nodeSize: 'Degree',
     nodeColor: 'Trans Science',
+    edgeColor: 'Connection Density',
     marker: { // obsolete?
       id: 'arrow',
       classString: 'arrow',

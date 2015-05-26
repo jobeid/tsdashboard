@@ -5,7 +5,6 @@ $trail-stroke: #bf4e2d;
 $trail-width: 0.25px;
 $trail-opacity: 0.5;
 
-$link-stroke: #93d3bc;
 $link-width: 0.25px;
 $link-opacity: 0.5;
 
@@ -49,9 +48,7 @@ circle.node:hover {
 }
 
 path.link {
-  stroke: $link-stroke;
   stroke-opacity: $link-opacity;
-  stroke-width: $link-width;
   fill: none;
 }
 

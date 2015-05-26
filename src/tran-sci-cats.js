@@ -14,7 +14,9 @@ define(function() {
     this.C = 0;
     this.H = 0;
     this.plus = function(ts) {
-      this.sum = ts.A + ts.C + ts.H;
+      // converts the publications ts values to ratios
+      // before aggregating on this ts object
+      this.sum = Number(ts.A) + Number(ts.C) + Number(ts.H);
       if (this.sum != 0) {
         this.A += (ts.A / this.sum);
         this.C += (ts.C / this.sum);

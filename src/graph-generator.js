@@ -65,7 +65,8 @@ define(dependencies, function(d3) {
 
     // scales
     graph.heatFill = d3.scale.linear().range(['lightgray','red']);
-
+    graph.edgeColorScale = d3.scale.linear().range(['steelblue', 'red']);
+    graph.edgeWidthScale = d3.scale.linear().range([0.25,4]);
     graph.radiusScale = d3.scale.linear()
       .range([1,10])
       .clamp(true);
@@ -78,7 +79,7 @@ define(dependencies, function(d3) {
     // key function
     graph.keyFunc = function keyFunc(d) { return d.data.name; };
 
-    // value map function
+    // value map function for nodes
     graph.valMap = function(d) {
       if (graph.properties.nodeSize == 'Human') {
         return d.ts.H;
@@ -102,6 +103,38 @@ define(dependencies, function(d3) {
         return (graph.properties.nodeSize == 'In Degree') ? d.inDegree: d.outDegree;
       }
     };
+
+    // value map function for edges
+    graph.edgeValMap = function(d) {
+      var sum;
+      if (graph.properties.edgeColor == 'Connection Density') {
+        return (d.density) ? d.density : d.conn.length;
+      }
+      if (graph.properties.edgeColor == '# Publications (both)') {
+        sum = d.target.pubCt + d.source.pubCt;
+        return sum / 2;
+      }
+      if (graph.properties.edgeColor == '# Publications (either)') {
+        return (d.target.pubCt > d.source.pubCt) ? d.target.pubCt : d.source.pubCt;
+      }
+      if (graph.properties.edgeColor == 'Human Research') {
+        sum = Number(d.target.ts.H) + Number(d.source.ts.H);
+        return sum / 2;
+      }
+      if (graph.properties.edgeColor == 'Cell Research') {
+        sum = Number(d.target.ts.C) + Number(d.source.ts.C);
+        return sum / 2;
+      }
+      if (graph.properties.edgeColor == 'Animal Research') {
+        sum = Number(d.target.ts.A) + Number(d.source.ts.A);
+        return sum / 2;
+      }
+      if (graph.properties.edgeColor == 'Animal & Cell Research') {
+        sum = Number(d.target.ts.A) + Number(d.source.ts.A)
+          + Number(d.target.ts.C) + Number(d.source.ts.C);
+        return sum / 2;
+      }
+    }
 
 
     // setup groups for edges and vertices
@@ -188,12 +221,21 @@ define(dependencies, function(d3) {
       )
       .range([20,100]).clamp(true);
 
+    // reset all scale domains
     graph.heatFill.domain(d3.extent(graph.data.nodes, function(d) {
       return graph.valMap(d);
     }));
 
     graph.radiusScale.domain(d3.extent(graph.data.nodes, function(d) {
       return graph.valMap(d);
+    }));
+
+    graph.edgeColorScale.domain(d3.extent(graph.data.links, function(d) {
+      return graph.edgeValMap(d);
+    }));
+
+    graph.edgeWidthScale.domain(d3.extent(graph.data.links, function(d) {
+      return graph.edgeValMap(d);
     }));
 
     // UPDATE TITLE
@@ -214,7 +256,22 @@ define(dependencies, function(d3) {
 
     // // En + U
     graph.edges
-      .attr('d', function(d) { return getArcSpecs(d); })
+      .on('mouseover', function(d) {
+        var label = '<p>Source: ' + d.source.data.name
+          + '</p><p>Target: ' + d.target.data.name
+          + '</p><p>Publications shared: ' + d.conn.length
+          +'</p>';
+
+          graph.tooltip.transition().duration(200).style('opacity', 0.8);
+
+          graph.tooltip.html(label)
+            .attr('width', (label.length + 20)+'px')
+            .style('left', d3.event.pageX + 'px')
+            .style('top', (d3.event.pageY - 28) + 'px');
+      })
+      .on('mouseout', function() {
+        graph.tooltip.transition().duration(200).style('opacity', 0);
+      })
       .attr('class', function(d) {
         var classString = 'link ';
 
@@ -228,7 +285,17 @@ define(dependencies, function(d3) {
           classString += 'nodesActive';
         }
         return classString;
+      })
+      .transition()
+      .duration(300)
+      .attr('d', function(d) { return getArcSpecs(d); })
+      .attr('stroke-width', function(d) {
+        return graph.edgeWidthScale(graph.edgeValMap(d));
+      })
+      .attr('stroke', function(d) {
+        return graph.edgeColorScale(graph.edgeValMap(d));
       });
+
     // // Ex
     graph.edges.exit().remove();
 

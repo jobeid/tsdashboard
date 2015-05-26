@@ -109,23 +109,14 @@ define(dependencies, function($, d3, properties, parseData, GraphGenerator, Spin
     properties.graph.propogateUpdate();
   };
 
-  function updateXaxis() {
-    var current = d3.select('#btnXaxis').text().trim();
+  function updateEdgeColor() {
+    var current = d3.select('#btnEdgeColor').text().trim();
     var next = d3.select(this).text().trim();
-    properties.xAxis = next;
+    properties.edgeColor = next;
     d3.select(this).text(current);
-    d3.select('#btnXaxis').html(next+uiObjects.span);
-    graph.propogateUpdate();
-  };
-
-  function updateYaxis() {
-    var current = d3.select('#btnYaxis').text().trim();
-    var next = d3.select(this).text().trim();
-    properties.yAxis = next;
-    d3.select(this).text(current);
-    d3.select('#btnYaxis').html(next+uiObjects.span);
-    graph.propogateUpdate();
-  };
+    d3.select('#btnEdgeColor').html(next+span);
+    properties.graph.propogateUpdate();
+  }
 
   function transition() {
     if (properties.range.lo != 2013) {
@@ -316,6 +307,13 @@ define(dependencies, function($, d3, properties, parseData, GraphGenerator, Spin
       d3.select('#nodeColorListFive').on('click', updateNodeColor);
       d3.select('#nodeColorListSix').on('click', updateNodeColor);
       d3.select('#nodeColorListSeven').on('click', updateNodeColor);
+
+      // EDGE COLOR DD
+      d3.select('#edgeColorListOne').on('click', updateEdgeColor);
+      d3.select('#edgeColorListTwo').on('click', updateEdgeColor);
+      d3.select('#edgeColorListThree').on('click', updateEdgeColor);
+      d3.select('#edgeColorListFour').on('click', updateEdgeColor);
+      d3.select('#edgeColorListFive').on('click', updateEdgeColor);
 
       // TOGGLES
       d3.select('#tglEdge').on('click', function() {

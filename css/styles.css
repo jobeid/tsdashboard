@@ -28,9 +28,7 @@ circle.node:hover {
   stroke-width: 1px; }
 
 path.link {
-  stroke: #93d3bc;
   stroke-opacity: 0.5;
-  stroke-width: 0.25px;
   fill: none; }
 
 path.link:hover {

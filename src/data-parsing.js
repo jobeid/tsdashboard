@@ -48,13 +48,13 @@ define(dependencies, function(ts, vectorize) {
       });
     }
 
-
-
-
-    // disgard nodes that have no ts matches
-    data.nodes = data.nodes.filter(function(datum){
-      return !((datum.ts.A == 0 + datum.ts.H == 0 + datum.ts.C == 0) == 0);
-    });
+    //
+    //
+    //
+    // // disgard nodes that have no ts matches
+    // data.nodes = data.nodes.filter(function(datum){
+    //   return !((datum.ts.A == 0 + datum.ts.H == 0 + datum.ts.C == 0) == 0);
+    // });
 
     //getEigen(data);
     //data.nodes = d3.map(tempNodes).values();
@@ -90,11 +90,6 @@ define(dependencies, function(ts, vectorize) {
           node.ts.H = Number(node.ts.H / sum).toFixed(4);
           node.ts.C = Number(node.ts.C / sum).toFixed(4);
         }
-        // effectively brings the ts data up a level.. this will be rectified with
-        // refactoring the node obj construction
-        node.Animal = node.ts.A;
-        node.Human = node.ts.H;
-        node.Cell = node.ts.C;
 
         t.A = scale(node.ts.A);
         t.H = scale(node.ts.H);
@@ -205,11 +200,12 @@ define(dependencies, function(ts, vectorize) {
     function departmentParse() {
       var departmentNodes = {}, departmentLinks = {};
 
-      // coalesce the author nodes into department nodes
+      // group the author nodes on department
       d3.map(tempNodes).values().forEach(function(author) {
         var name = getDeptName(author);
 
         if (!departmentNodes[name]) {
+
           departmentNodes[name] = {
             coors:{x:0,y:0},
             data:{name:name},
@@ -217,13 +213,18 @@ define(dependencies, function(ts, vectorize) {
             outDegree:0,
             inDegree:0,
             intercom:0,
+            pop:0,
             active:true
           };
         }
+
         departmentNodes[name].ts.plus(author.ts);
-
+        departmentNodes[name].pop++;
+        console.log(departmentNodes[name]);
+        console.log(departmentNodes[name].ts);
       });
-
+      console.log(departmentNodes);
+      console.log(departmentNodes['BMIC'].ts);
       // coalesce the authorship links into department links
       d3.map(tempLinks).values().forEach(function(link) {
         var sDep = getDeptName(link.source), tDep = getDeptName(link.target);
