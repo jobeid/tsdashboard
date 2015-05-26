@@ -22,7 +22,6 @@ define(dependencies, function(properties) {
       'width',
       'xOffset',
       'yOffset',
-      'nRad',
       'nodeSize',
       'nodeColor',
       'marker',

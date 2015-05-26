@@ -386,7 +386,7 @@ define(dependencies, function(d3) {
         if(graph.properties.nodeColor == 'Trans Science') {
           return 'RGB('+graph.tsFill(d.ts.A).toFixed()+','+graph.tsFill(d.ts.H).toFixed()+','+graph.tsFill(d.ts.C).toFixed()+')';
         }
-        return graph.valMap(d);
+        return graph.heatFill(graph.valMap(d));
       })
       .attr('class', function(d) {
         if (d.active) {

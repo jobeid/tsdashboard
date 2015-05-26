@@ -145,7 +145,6 @@ define(dependencies, function(Author, Publication) {
 			gOne = termSplit[0] + '.' + termSplit[1] + '.' + termSplit[2],
 			gTwo = termSplit[0] + '.' + termSplit[1];
 		if (ab.split('')[0] == 'C' || ab == 'M01' || meshNum == 'B01.050.150.900.649.801.400.112.400.400') {
-    // if (ab == 'M01' || meshNum == 'B01.050.150.900.649.801.400.112.400.400') {
 			return transTerms[0];
 		}
 		if (ab == 'B01') {

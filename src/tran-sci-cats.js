@@ -10,13 +10,13 @@
 
 define(function() {
   return function() {
-    this.A = 0;
-    this.C = 0;
-    this.H = 0;
+    this.A = 0.0;
+    this.C = 0.0;
+    this.H = 0.0;
     this.plus = function(ts) {
       // converts the publications ts values to ratios
       // before aggregating on this ts object
-      this.sum = Number(ts.A) + Number(ts.C) + Number(ts.H);
+      this.sum = ts.A + ts.C + ts.H;
       if (this.sum != 0) {
         this.A += (ts.A / this.sum);
         this.C += (ts.C / this.sum);

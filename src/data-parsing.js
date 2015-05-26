@@ -48,21 +48,12 @@ define(dependencies, function(ts, vectorize) {
       });
     }
 
-    //
-    //
-    //
-    // // disgard nodes that have no ts matches
-    // data.nodes = data.nodes.filter(function(datum){
-    //   return !((datum.ts.A == 0 + datum.ts.H == 0 + datum.ts.C == 0) == 0);
-    // });
-
     //getEigen(data);
     //data.nodes = d3.map(tempNodes).values();
     setOutInDegrees(data.links);
     coordinateNodes(data.nodes);
     data.mesh = d3.map(meshMap).values();
-    //updateMesh(d3.map(meshMap).values());  // these two calls need
-    //updateNodeFilter(data.nodes);          // to be moved to exec in ui!
+
     return data;
 
     // HELPER FUNCTIONS
@@ -83,12 +74,18 @@ define(dependencies, function(ts, vectorize) {
 
       nodes.forEach(function(node) {
         var t = {},
+          sum = 0;
+
+        if (node.hasOwnProperty('pop')) {
+          sum = node.pop;
+        } else {
           sum = node.pubCt;
+        }
 
         if (sum != 0) {
-          node.ts.A = Number(node.ts.A / sum).toFixed(4);
-          node.ts.H = Number(node.ts.H / sum).toFixed(4);
-          node.ts.C = Number(node.ts.C / sum).toFixed(4);
+          node.ts.A = Number((node.ts.A / sum).toFixed(4));
+          node.ts.H = Number((node.ts.H / sum).toFixed(4));
+          node.ts.C = Number((node.ts.C / sum).toFixed(4));
         }
 
         t.A = scale(node.ts.A);
@@ -156,6 +153,7 @@ define(dependencies, function(ts, vectorize) {
               tempNodes[pAuth].pmids = [];
               tempNodes[pAuth].active = true;
             }
+
             tempNodes[pAuth].ts.plus(pub.ts);
             tempNodes[pAuth].pmids.push(pub.pmid);
             tempNodes[pAuth].pubCt += 1;
@@ -206,26 +204,27 @@ define(dependencies, function(ts, vectorize) {
 
         if (!departmentNodes[name]) {
 
-          departmentNodes[name] = {
-            coors:{x:0,y:0},
-            data:{name:name},
-            ts: new ts(),
-            outDegree:0,
-            inDegree:0,
-            intercom:0,
-            pop:0,
-            active:true
-          };
+          departmentNodes[name] = {};
+          departmentNodes[name].ts = new ts();
+          departmentNodes[name].coors = {x:0,y:0};
+          departmentNodes[name].data = {name:name};
+          departmentNodes[name].outDegree = 0;
+          departmentNodes[name].inDegree = 0;
+          departmentNodes[name].intercom = 0;
+          departmentNodes[name].pop = 0;
+          departmentNodes[name].pubCt = 0;
+          departmentNodes[name].active = true;
+
         }
 
         departmentNodes[name].ts.plus(author.ts);
         departmentNodes[name].pop++;
-        console.log(departmentNodes[name]);
-        console.log(departmentNodes[name].ts);
+        departmentNodes[name].pubCt += author.pubCt;
+
       });
-      console.log(departmentNodes);
-      console.log(departmentNodes['BMIC'].ts);
+
       // coalesce the authorship links into department links
+
       d3.map(tempLinks).values().forEach(function(link) {
         var sDep = getDeptName(link.source), tDep = getDeptName(link.target);
 
