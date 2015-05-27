@@ -39,7 +39,7 @@ define(dependencies, function(d3) {
     graph.xAxis = d3.svg.axis()
       .scale(graph.x)
       .orient(['bottom'])
-      .ticks([0]);
+      .ticks([7]);
 
     graph.yAxis = d3.svg.axis()
       .scale(graph.y)
@@ -77,7 +77,7 @@ define(dependencies, function(d3) {
 
   Heatmap.prototype.updateData = function(data) {
     var graph = this;
-    
+
     // clean old data
     graph.data.splice(0, graph.data.length);
 
@@ -101,7 +101,7 @@ define(dependencies, function(d3) {
 
     graph.blocks
       .on('mouseover', function(d) {
-        var label = '<h3>Partition ' + d.x +'</h3><p>Density ' + d.d + ' Authors</p>';
+        var label = '<h3>Partition ' + (d.x+1) +'</h3><p>Density ' + d.d + ' Authors</p>';
 
         graph.tooltip.transition().duration(200).style('opacity', 0.8);
 

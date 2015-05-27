@@ -17,8 +17,8 @@ define(dependencies, function(d3) {
     graph.data = {};
     graph.year = '2006';
     graph.props = {
-      side:d3.select('.chart')[0][0].clientWidth,
-      buffer: 50,
+      side:d3.select('.weber')[0][0].clientWidth,
+      buffer: 0,
       n: 7,  // this needs to be dynamically set!
       q: Math.sqrt(Math.pow((0-260),2)+Math.pow((-300-150),2))
     };
@@ -34,6 +34,19 @@ define(dependencies, function(d3) {
     graph.fillScale = d3.scale.linear().range(['lightgray', 'red']);
 
     graph.polys = graph.svg.append('g').selectAll('g');
+    graph.labels = graph.svg.append('g').selectAll('g');
+
+    // graph.legend = graph.svg.append('g')
+    //   .attr('transform', 'translate(250,-250)');
+    //
+    // graph.legend
+    //   .append('rect')
+    //   .attr('width', 100)
+    //   .attr('height', 60)
+    //   .attr('stroke', 'black')
+    //   .attr('stroke-width', 1.5)
+    //   .attr('stroke-opacity', 0.3)
+    //   .attr('fill', 'none');
 
     graph.tooltip = d3.select('body')
       .append('div')
@@ -92,7 +105,7 @@ define(dependencies, function(d3) {
 
     graph.polys
       .on('mouseover', function(d) {
-        var label = '<h3>Partition ' + d.p +'</h3><p>Density ' + d.d + ' Authors</p>';
+        var label = '<h3>Partition ' + (d.p+1) +'</h3><p>Density ' + d.d + ' Authors</p>';
 
         graph.tooltip.transition().duration(200).style('opacity', 0.8);
 
@@ -110,6 +123,16 @@ define(dependencies, function(d3) {
       .attr('fill', function(d) {
         return graph.fillScale(d.d);
       });
+
+      graph.labels = graph.labels.data(polys);
+
+      graph.labels.enter().append('text').attr('class', 'label');
+
+      graph.labels
+        .attr('x', function(d) { return d.label.x; })
+        .attr('y', function(d) { return d.c4.y + 20; })
+        .text(function(d) { return d.label.value; });
+
   };
 
   function pathGen(d) {
@@ -145,15 +168,29 @@ define(dependencies, function(d3) {
         x2 = -260 + n0;
         y2 = 150;
 
-        polys.push({c1:{x:lx2,y:ly2},c2:{x:lx1,y:ly1},c3:{x:x1,y:y1},c4:{x:x2,y:y2},d:Math.floor(Math.random() * 51)});
+        polys.push({
+          c1:{x:lx2,y:ly2},
+          c2:{x:lx1,y:ly1},
+          c3:{x:x1,y:y1},
+          c4:{x:x2,y:y2},
+          d:Math.floor(Math.random() * 51),
+          label:{value:i,x:(x2-(q/n/2))}
+        });
 
-        lx1 = x1 + x0;
-        ly1 = y1 + x0;
+        lx1 = x1 + (Math.sqrt(Math.pow(x0,2)/2));
+        ly1 = y1 + (Math.sqrt(Math.pow(x0,2)/2));
         lx2 = x2 + x0;
         ly2 = y2;
       }
 
-      polys.push({c1:{x:lx2,y:ly2},c2:{x:lx1,y:ly1},c3:{x:260,y:150},c4:{x:260,y:150},d:Math.floor(Math.random() * 51)});
+      polys.push({
+        c1:{x:lx2,y:ly2},
+        c2:{x:lx1,y:ly1},
+        c3:{x:260,y:150},
+        c4:{x:260,y:150},
+        d:Math.floor(Math.random() * 51),
+        label:{value:'7',x:(260-(q/n/2))}
+      });
 
       return polys;
   };

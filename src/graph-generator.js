@@ -36,7 +36,8 @@ define(dependencies, function(d3) {
       return 'translate(' + graph.xScale(d.coors.x) + ',' + graph.yScale(d.coors.y) + ')';
     }
 
-    graph.vis = properties.svg.append('g')
+    graph.vis = properties.svg.attr('class', 'weber')
+      .append('g')
       .attr('transform', 'translate(' + (properties.height / 2) + ',' + ((properties.height / 2) + 50) + ')')
       .call(d3.behavior.zoom().x(graph.xScale).y(graph.yScale).scaleExtent([1,16]).on("zoom", zoom))
       .append('g')
