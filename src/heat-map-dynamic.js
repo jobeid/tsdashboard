@@ -12,10 +12,11 @@ var dependencies = [
 ];
 
 define(dependencies, function(d3) {
-  function Heatmap() {
-    var graph = this;
+  function Heatmap(properties) {
+    var graph = this,
+      sample = [0,5,10,15,20,25];
     graph.data = {};
-    graph.year = '2006';
+    graph.year = properties.range.lo;
     graph.props = {
       side:d3.select('.weber')[0][0].clientWidth,
       buffer: 0,
@@ -36,17 +37,36 @@ define(dependencies, function(d3) {
     graph.polys = graph.svg.append('g').selectAll('g');
     graph.labels = graph.svg.append('g').selectAll('g');
 
-    // graph.legend = graph.svg.append('g')
-    //   .attr('transform', 'translate(250,-250)');
-    //
-    // graph.legend
-    //   .append('rect')
-    //   .attr('width', 100)
-    //   .attr('height', 60)
-    //   .attr('stroke', 'black')
-    //   .attr('stroke-width', 1.5)
-    //   .attr('stroke-opacity', 0.3)
-    //   .attr('fill', 'none');
+    graph.legend = graph.svg.append('g')
+      .attr('transform', 'translate(125,-250)');
+
+    graph.title = graph.legend
+      .append('text')
+      .attr('class', 'legend')
+      .text('Year');
+
+    graph.cohortSize = graph.legend
+      .append('text')
+      .attr('y', 20)
+      .attr('class', 'legend')
+      .text('cohortSize');
+
+    graph.fillScale.domain(d3.extent(sample, function(s) { return s; }));
+
+    graph.legend.selectAll('rect')
+      .data(sample)
+      .enter()
+      .append('rect')
+      .attr('y', 40)
+      .attr('x', function(d, i) {
+        return i * 17;
+      })
+      .attr('height', 15)
+      .attr('width', 15)
+      .attr('class', 'poly')
+      .attr('fill', function(d) {
+        return graph.fillScale(d);
+      });
 
     graph.tooltip = d3.select('body')
       .append('div')
@@ -90,14 +110,20 @@ define(dependencies, function(d3) {
     var graph = this;
     var polys = definePolys(graph.props.q, graph.props.n);
 
-    // console.log(graph.data[graph.year]);
-
     graph.data[graph.year].forEach(function(d) {
       polys[d.x].p = d.x;
       polys[d.x].d = d.d;
     });
 
-    // console.log(polys);
+    graph.title.text('Current year: ' + graph.year);
+
+    graph.cohortSize.text(function() {
+      var pop = 0;
+      polys.forEach(function(p) {
+        pop += p.d;
+      });
+      return 'Cohort size: ' + pop;
+    });
 
     graph.polys = graph.polys.data(polys);
 
@@ -131,7 +157,8 @@ define(dependencies, function(d3) {
       graph.labels
         .attr('x', function(d) { return d.label.x; })
         .attr('y', function(d) { return d.c4.y + 20; })
-        .text(function(d) { return d.label.value; });
+        .text(function(d) { return d.label.value; })
+        .attr('class', 'legend');
 
   };
 

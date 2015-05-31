@@ -159,19 +159,25 @@ define(dependencies, function($, d3, properties, parseData, GraphGenerator, Spin
 
     var that = this;
     raw.forEach(function(node) {
-      if (that.properties.cohort.min == 0 &&
-        lines[that.properties.cohort.max](node.coors.x) > node.coors.y) {
 
-        pids.push(node.data.pid);
-        cohort['2006'].push(node);
-      } else {
-        if (lines[that.properties.cohort.max](node.coors.x) > node.coors.y &&
-          lines[that.properties.cohort.min-1](node.coors.x) < node.coors.y) {
+      if (node.data.isEveryYear()) {
+        if (that.properties.cohort.min == 0 &&
+          lines[that.properties.cohort.max](node.coors.x) > node.coors.y) {
 
           pids.push(node.data.pid);
           cohort['2006'].push(node);
+        } else {
+          if (lines[that.properties.cohort.max](node.coors.x) > node.coors.y &&
+            lines[that.properties.cohort.min-1](node.coors.x) < node.coors.y) {
+
+            pids.push(node.data.pid);
+            cohort['2006'].push(node);
+          }
         }
+      } else {
+        console.log('author not in every year');
       }
+
     });
 
     for (var i=2007; i<2014; i++) {
@@ -199,11 +205,11 @@ define(dependencies, function($, d3, properties, parseData, GraphGenerator, Spin
     }
 
     if (!this.properties.shm) {
-      this.properties.shm = new heatmap();
+      this.properties.shm = new heatmap(this.properties);
     }
 
     if (!this.properties.dhm) {
-      this.properties.dhm = new dynamicHeatmap();
+      this.properties.dhm = new dynamicHeatmap(this.properties);
     }
 
     this.properties.dhm.updateData(dat.slice(0,dat.length-1));

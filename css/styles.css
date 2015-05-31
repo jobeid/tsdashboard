@@ -5,6 +5,13 @@ html {
 body, div, svg {
   font-family: Roboto Slab; }
 
+.legend {
+  font-family: Roboto Slab;
+  stroke: black;
+  stroke-opacity: 0.8;
+  fill: lightgray;
+  font-size: 18px; }
+
 .tri-label {
   text-anchor: middle;
   fill-opacity: 0.8;

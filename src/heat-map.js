@@ -33,18 +33,19 @@ define(dependencies, function(d3) {
       .range([0, properties.width-35]);
 
     graph.y = d3.scale.linear()
-      .domain([2006, 2013])
+      .domain([2006, 2014])
       .range([properties.height-50, 0]);
 
     graph.xAxis = d3.svg.axis()
       .scale(graph.x)
       .orient(['bottom'])
-      .ticks([7]);
+      .tickValues([1,2,3,4,5,6,7]);
 
     graph.yAxis = d3.svg.axis()
       .scale(graph.y)
       .orient('left')
-      .tickFormat(d3.format(''));
+      .tickFormat(d3.format(''))
+      .tickValues([2006,2007,2008,2009,2010,2011,2012,2013]);
 
     graph.vis.append('g')
       .attr('class', 'x axis')
@@ -54,11 +55,17 @@ define(dependencies, function(d3) {
       .attr('y', 45)
       .attr('x', (properties.width/2))
       .style('text-anchor', 'middle')
-      .text('Density shift towards Human ->')
+      .text('Partitions')
       .attr('class', 'trend-label');
+
+    d3.selectAll(".tick text")
+      .style("text-anchor", "start")
+      .attr("x", -43)
+      .attr("y", 6)
 
     graph.vis.append('g')
       .attr('class', 'y axis')
+      .attr('transform', 'translate(0,25)')
       .call(graph.yAxis)
       .append('text')
       .attr('transform', 'rotate(-90)')
