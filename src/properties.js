@@ -8,14 +8,18 @@
 
 var dependencies = [
   'd3',
-  'pub-hash'
+  'pub-hash',
+  'dept-data'
 ];
 
-define(dependencies, function(d3, PubHash) {
+define(dependencies, function(d3, PubHash, deptData) {
   var properties = {
     pubHash: new PubHash(),
+    deptData: deptData,
     svg: null,
     graph: null,
+    dhm: null, // dynamic heat map
+    shm: null, // static heat map
     trendData: null,
     aTrend: null,
     hTrend: null,
@@ -23,12 +27,13 @@ define(dependencies, function(d3, PubHash) {
     transition: null,
     transform: null,
     height: 600, // this will need to be dynamically updated
-    width: window.innerWidth * 0.9, // '' '' '' '' '' ''
+    width: 600, // '' '' '' '' '' ''
     xOffset: 600 / 2, // obsolete?
     yOffset: 600 / 2, // obsolete?
-    nRad: 15, // obsolete?
+    cohort: {min:0,max:1,data:null},
     nodeSize: 'Degree',
     nodeColor: 'Trans Science',
+    edgeColor: 'Connection Density',
     marker: { // obsolete?
       id: 'arrow',
       classString: 'arrow',
@@ -51,15 +56,13 @@ define(dependencies, function(d3, PubHash) {
     Authors: true,
     Departments: false,
     Trails: false,
-    xAxis: 'Human',
-    yAxis: 'Animal & Cell',
     range: {
       lo: 2006,
       hi: 2006
     },
     mesh: [],
     nodeFilter: [],
-    previous: []
+    previous: {}
   };
 
   return properties;

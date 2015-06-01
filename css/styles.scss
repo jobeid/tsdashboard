@@ -2,7 +2,11 @@ $font: Roboto Slab;
 $background: lightsteelblue;
 
 $trail-stroke: #bf4e2d;
-$trail-width: 8px;
+$trail-width: 0.25px;
+$trail-opacity: 0.5;
+
+$link-width: 0.25px;
+$link-opacity: 0.5;
 
 $green-touch: #588e43;
 
@@ -16,17 +20,25 @@ body, div, svg {
   font-family: $font;
 }
 
+.legend {
+  font-family: $font;
+  stroke: black;
+  stroke-opacity: 0.8;
+  fill: lightgray;
+  font-size: 18px;
+}
+
 .tri-label {
   text-anchor: middle;
   fill-opacity: 0.8;
   stroke: black;
-  font-size: 500px;
+  font-size: 22px;
 }
 
-.overlay, .overlay-outer, .sub-overlay {
+.overlay {
   stroke: black;
   stroke-opacity: 1;
-  stroke-width: 4px;
+  stroke-width: 0.5px;
 }
 
 .trans-axis {
@@ -35,18 +47,16 @@ body, div, svg {
 
 circle.node {
   stroke: black;
-  stroke-width: 4px;
+  stroke-width: 0.5px;
 }
 
 circle.node:hover {
   stroke: red;
-  stroke-width: 8px;
+  stroke-width: 1px;
 }
 
 path.link {
-  stroke: steelBlue;
-  stroke-opacity: 0.7;
-  stroke-width: 4px;
+  stroke-opacity: $link-opacity;
   fill: none;
 }
 
@@ -69,7 +79,7 @@ div.tooltip {
 line.trails {
   stroke: $trail-stroke;
   stroke-width: $trail-width;
-  stroke-opacity: 0.8;
+  stroke-opacity: $trail-opacity;
 }
 
 .active {
@@ -81,7 +91,7 @@ line.trails {
 }
 
 .graph-title {
-  font-size: 400px;
+  font-size: 36px;
   text-decoration: underline;
   fill-opacity: 0.8;
   fill: $background;
@@ -135,4 +145,14 @@ line.trails {
   fill-opacity: 0.6;
   border: 0px;
   border-radius: 5px;
+}
+
+.frame {
+  fill: none;
+  pointer-events: all;
+}
+
+.poly {
+  stroke:black;
+  stroke-width: 1px;
 }

@@ -5,32 +5,37 @@ html {
 body, div, svg {
   font-family: Roboto Slab; }
 
+.legend {
+  font-family: Roboto Slab;
+  stroke: black;
+  stroke-opacity: 0.8;
+  fill: lightgray;
+  font-size: 18px; }
+
 .tri-label {
   text-anchor: middle;
   fill-opacity: 0.8;
   stroke: black;
-  font-size: 500px; }
+  font-size: 22px; }
 
-.overlay, .overlay-outer, .sub-overlay {
+.overlay {
   stroke: black;
   stroke-opacity: 1;
-  stroke-width: 4px; }
+  stroke-width: 0.5px; }
 
 .trans-axis {
   stroke: blue; }
 
 circle.node {
   stroke: black;
-  stroke-width: 4px; }
+  stroke-width: 0.5px; }
 
 circle.node:hover {
   stroke: red;
-  stroke-width: 8px; }
+  stroke-width: 1px; }
 
 path.link {
-  stroke: steelBlue;
-  stroke-opacity: 0.7;
-  stroke-width: 4px;
+  stroke-opacity: 0.5;
   fill: none; }
 
 path.link:hover {
@@ -49,14 +54,14 @@ div.tooltip {
 
 line.trails {
   stroke: #bf4e2d;
-  stroke-width: 8px;
-  stroke-opacity: 0.8; }
+  stroke-width: 0.25px;
+  stroke-opacity: 0.5; }
 
 .inactive {
   display: none; }
 
 .graph-title {
-  font-size: 400px;
+  font-size: 36px;
   text-decoration: underline;
   fill-opacity: 0.8;
   fill: lightsteelblue; }
@@ -99,5 +104,13 @@ line.trails {
   fill-opacity: 0.6;
   border: 0px;
   border-radius: 5px; }
+
+.frame {
+  fill: none;
+  pointer-events: all; }
+
+.poly {
+  stroke: black;
+  stroke-width: 1px; }
 
 /*# sourceMappingURL=styles.css.map */

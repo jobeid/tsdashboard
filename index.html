@@ -9,9 +9,9 @@
   <link rel="stylesheet" type="text/css" href="css/bootstrap-dropdown-checkbox.css">
   <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.0/css/bootstrap-toggle.min.css" rel="stylesheet">
   <link rel="stylesheet" type="text/css" href="css/bootstrap-slider.css">
-
-  <meta name="viewport" content="width=device-width, initial-scale=0.65">
-
+<!--
+  <meta name="viewport" content="width=device-width, initial-scale=0.65, maximum-scale=0.65">
+-->
 </head>
 <body>
   <div class="container-fluid">
@@ -19,186 +19,246 @@
       <div class="col-sm-12 col-md-12 col-lg-12">
         <div class="panel panel-primary">
           <div class="panel-heading text-center">
-            <h2>The Medical University of South Carolina - Biomedical Informatics Center</h2>
-            <h4>Translational Science Dashboard</h4>
+            <div class="container-fluid">
+              <div class="row">
+                <div class="col-sm-4 col-md-2 col-lg-2">
+                  <img alt="BiRG" src="http://birg.cs.cofc.edu/images/Paul-labs-logo.png">
+                </div>
+                <div class="col-sm-4 col-md-8 col-lg-8">
+                  <h1>Translational Science Dashboard</h1>
+                  <h5>Biomedical Informatics Center - Medical University of South Carolina</h5>
+                  <h5>Bioinformatics Research Group - College of Charleston</h5>
+                </div>
+                <div class="col-sm-4 col-md-2 col-lg-2">
+                  <img alt="BMIC" src="./dat/img/BMIC_icon.png">
+                </div>
+              </div>
+            </div>
           </div>
 
-          <!-- VIS AREA -->
-          <div class="panel-body chart"></div>
-          <!-- VIS AREA END -->
+          <div class="panel-body container-fluid">
+            <div class="row">
+              <div class="col-sm-12 col-md-8 col-lg-8">
+                <div class="container-fluid">
+                  <div class="row">
+                    <div class="col-sm-12 col-md-12 col-lg-12">
+                      <div class="panel panel-default">
+                        <div class="panel-body">
+                          <!-- Weber Vis -->
+                          <div class="chart"></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-sm-12 col-md-12 col-lg-12">
+                      <div class="panel panel-default">
+                        <div class="panel-body">
+                          <!-- DHM Vis -->
+                          <div class="dynamic-hm"></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- options here? -->
+              <div class="col-sm-12 col-md-4 col-lg-4">
+                <div class="container-fluid">
+                  <div class="row">
+                    <div class="col-sm-12 col-md-12 col-lg-12">
+                      <div class="panel panel-info text-center">
+                        <div class="panel-heading">
+                          <h4><strong>Filters</strong></h4>
+                        </div>
+                        <div class="panel-body">
+
+                          <div class="container-fluid">
+
+                            <div class="row">
+                              <!-- FILTER DROPDOWNS -->
+                              <div class="col-md-6 col-lg-6">
+                                <div class="mesh-term-filter"></div>
+                              </div>
+                              <div class="col-md-6 col-lg-6">
+                                <div class="node-filter"></div>
+                              </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                              <div class="col-md-6 col-lg-6">
+                                <button id="btnApplyFilters" type="button" class="btn btn-info">Apply Filters</button>
+                              </div>
+                            </div>
+
+                          </div> <!-- END FILTER CONTAINER -->
+
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="container-fluid">
+                      <div class="col-sm-12 col-md-12 col-lg-12">
+                        <div class="panel panel-info text-center">
+                          <div class="panel-heading">
+                            <h4><strong>Node Options</strong></h4>
+                          </div>
+                          <div class="panel-body">
+
+                            <div class="container-fluid">
+                              <div class="row">
+                                <div class="col-md-6 col-lg-6">
+                                  <p>Nodes As: </p>
+                                  <div class="btn-group">
+                                      <button id="btnNodePerspective" type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-expand="false">
+                                      Authors<span class="caret"></span>
+                                      </button>
+                                      <ul class="dropdown-menu" role="menu">
+                                          <li><a href="#" id="nodePerspListOne">Departments</a></li>
+                                      </ul>
+                                  </div>
+                                </div>
+                                <div class="col-md-6 col-lg-6">
+                                  <p>Node Size: </p>
+                                  <div class="btn-group">
+                                      <button id="btnNodeSize" type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-expand="false">
+                                      Degree<span class="caret"></span>
+                                      </button>
+                                      <ul class="dropdown-menu" role="menu">
+                                          <li><a href="#" id="nodeSizeListOne">In Degree</a></li>
+                                          <li><a href="#" id="nodeSizeListTwo">Out Degree</a></li>
+                <!--                            <li><a href="#" id="nodeSizeListThree">Centrality</a></li> -->
+                                          <li><a href="#" id="nodeSizeListFour">Animal</a></li>
+                                          <li><a href="#" id="nodeSizeListFive">Human</a></li>
+                                          <li><a href="#" id="nodeSizeListSix">Cell</a></li>
+                                          <li><a href="#" id="nodeSizeListSeven">Publication Count</a></li>
+                                      </ul>
+                                  </div>
+                                </div>
+                              </div>
+                              <hr>
+                              <div class="row">
+                                <div class="col-md-6 col-lg-6">
+                                  <p>Node Color: </p>
+                                  <div class="btn-group">
+                                      <button id="btnNodeColor" type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-expand="false">
+                                      Trans Science<span class="caret"></span>
+                                      </button>
+                                      <ul class="dropdown-menu" role="menu">
+                                          <li><a href="#" id="nodeColorListOne">Degree</a></li>
+                                          <li><a href="#" id="nodeColorListTwo">In Degree</a></li>
+                                          <li><a href="#" id="nodeColorListThree">Out Degree</a></li>
+                                          <li><a href="#" id="nodeColorListFour">Animal</a></li>
+                                          <li><a href="#" id="nodeColorListFive">Human</a></li>
+                                          <li><a href="#" id="nodeColorListSix">Cell</a></li>
+                                          <li><a href="#" id="nodeColorListSeven">Publication Count</a></li>
+                                      </ul>
+                                  </div>
+                                </div>
+                                <div class="col-md-6 col-lg-6">
+                                  <p>Node Trails </p>
+                                  <button id="tglTrails" type="button" class="btn btn-default" data-toggle="button">Off</button>
+                                </div>
+                              </div>
+
+
+                            </div> <!-- END NODE OPTIONS CONTAINER -->
+
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="container-fluid">
+                      <div class="col-sm-12 col-md-12 col-lg-12">
+                        <div class="panel panel-info text-center">
+                          <div class="panel-heading">
+                            <h4><strong>Edge Options</strong></h4>
+                          </div>
+                          <div class="panel-body">
+
+                            <div class="container-fluid">
+                              <div class="row">
+                                <div class="col-md-6 col-lg-6">
+                                  <p>Edge Color: </p>
+                                  <div class="btn-group">
+                                      <button id="btnEdgeColor" type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-expand="false">
+                                      Connection Density<span class="caret"></span>
+                                      </button>
+                                      <ul class="dropdown-menu" role="menu">
+                                          <li><a href="#" id="edgeColorListOne"># Publications (both)</a></li>
+                                          <li><a href="#" id="edgeColorListTwo"># Publications (either)</a></li>
+                                          <li><a href="#" id="edgeColorListThree">Human Research</a></li>
+                                          <li><a href="#" id="edgeColorListFour">Cell Research</a></li>
+                                          <li><a href="#" id="edgeColorListFive">Animal Research</a></li>
+                                          <li><a href="#" id="edgeColorListFive">Animal & Cell Research</a></li>
+                                      </ul>
+                                  </div>
+                                </div>
+                              </div>
+                              <hr>
+                              <div class="row">
+                                <div class="col-md-6 col-lg-6">
+                                  <p>Show Edges </p>
+                                  <button id="tglEdge" type="button" class="btn btn-default" data-toggle="button">Off</button>
+                                </div>
+                              </div>
+
+                            </div> <!-- END EDGE OPTIONS CONTAINER -->
+
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="container-fluid">
+                      <div class="col-sm-12 col-md-12 col-lg-12">
+                        <div class="panel panel-info text-center">
+                          <div class="panel-heading">
+                            <h4><strong>Misc Options</strong></h4>
+                          </div>
+                          <div class="panel-body">
+
+                            <div class="container-fluid">
+                              <div class="row">
+                                <div class="col-md-12 col-lg-12">
+                                  <p>Year slider</p>
+                                  <input id="date-slider" type="text" class="span2" value="" data-slider-min="2006" data-slider-max="2013" data-slider-step="1" data-slider-value="[2006,2013]"/>
+                                </div>
+                              </div>
+                              <hr>
+                              <div class="row">
+                                <div class="col-md-12 col-lg-12">
+                                  <p>Transition</p>
+                                  <button id="tglTransition" type="button" class="btn btn-default" data-toggle="button">Off</button>
+                                </div>
+                              </div>
+                              <hr>
+                              <div class="row">
+                                <div class="col-md-12 col-lg-12">
+                                  <p>Cohort Selection</p>
+                                  <input id="cohort-slider" type="text" class="span2" value="" data-slider-min="0" data-slider-max="6" data-slider-step="1" data-slider-value="[0,1]"/>
+                                </div>
+                              </div>
+                            </div> <!-- END MISC OPTS CONTAINER -->
+
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </div>
-
-  <!-- OPTIONS -->
-  <div class="container-fluid">
-    <div class="container-row">
-
-      <div class="col-sm-6 col-md-4 col-lg-3">
-        <div class="panel panel-info text-center">
-          <div class="panel-heading">
-            <h4><strong>Filters</strong></h4>
-          </div>
-          <div class="panel-body">
-
-            <div class="container-fluid">
-
-              <div class="row">
-                <!-- FILTER DROPDOWNS -->
-                <div class="col-md-6 col-lg-6">
-                  <div class="mesh-term-filter"></div>
-                </div>
-                <div class="col-md-6 col-lg-6">
-                  <div class="node-filter"></div>
-                </div>
-              </div>
-              <hr>
-              <div class="row">
-                <div class="col-md-6 col-lg-6">
-                  <button id="btnApplyFilters" type="button" class="btn btn-info">Apply Filters</button>
-                </div>
-              </div>
-
-            </div> <!-- END FILTER CONTAINER -->
-
-          </div>
-        </div>
-      </div>
-
-      <div class="col-sm-6 col-md-4 col-lg-3">
-        <div class="panel panel-info text-center">
-          <div class="panel-heading">
-            <h4><strong>Node Options</strong></h4>
-          </div>
-          <div class="panel-body">
-
-            <div class="container-fluid">
-              <div class="row">
-                <div class="col-md-6 col-lg-6">
-                  <p>Nodes As: </p>
-                  <div class="btn-group">
-                      <button id="btnNodePerspective" type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-expand="false">
-                      Authors<span class="caret"></span>
-                      </button>
-                      <ul class="dropdown-menu" role="menu">
-                          <li><a href="#" id="nodePerspListOne">Departments</a></li>
-                      </ul>
-                  </div>
-                </div>
-                <div class="col-md-6 col-lg-6">
-                  <p>Node Size: </p>
-                  <div class="btn-group">
-                      <button id="btnNodeSize" type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-expand="false">
-                      Degree<span class="caret"></span>
-                      </button>
-                      <ul class="dropdown-menu" role="menu">
-                          <li><a href="#" id="nodeSizeListOne">In Degree</a></li>
-                          <li><a href="#" id="nodeSizeListTwo">Out Degree</a></li>
-<!--                            <li><a href="#" id="nodeSizeListThree">Centrality</a></li> -->
-                          <li><a href="#" id="nodeSizeListFour">Animal</a></li>
-                          <li><a href="#" id="nodeSizeListFive">Human</a></li>
-                          <li><a href="#" id="nodeSizeListSix">Cell</a></li>
-                          <li><a href="#" id="nodeSizeListSeven">Publication Count</a></li>
-                      </ul>
-                  </div>
-                </div>
-              </div>
-              <hr>
-              <div class="row">
-                <div class="col-md-6 col-lg-6">
-                  <p>Node Color: </p>
-                  <div class="btn-group">
-                      <button id="btnNodeColor" type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-expand="false">
-                      Trans Science<span class="caret"></span>
-                      </button>
-                      <ul class="dropdown-menu" role="menu">
-                          <li><a href="#" id="nodeColorListOne">Degree</a></li>
-                          <li><a href="#" id="nodeColorListTwo">In Degree</a></li>
-                          <li><a href="#" id="nodeColorListThree">Out Degree</a></li>
-                          <li><a href="#" id="nodeColorListFour">Animal</a></li>
-                          <li><a href="#" id="nodeColorListFive">Human</a></li>
-                          <li><a href="#" id="nodeColorListSix">Cell</a></li>
-                          <li><a href="#" id="nodeColorListSeven">Publication Count</a></li>
-                      </ul>
-                  </div>
-                </div>
-                <div class="col-md-6 col-lg-6">
-                  <p>Node Trails </p>
-                  <button id="tglTrails" type="button" class="btn btn-default" data-toggle="button">Off</button>
-                </div>
-              </div>
-
-
-            </div> <!-- END NODE OPTIONS CONTAINER -->
-
-          </div>
-        </div>
-      </div>
-
-      <div class="col-sm-6 col-md-4 col-lg-3">
-        <div class="panel panel-info text-center">
-          <div class="panel-heading">
-            <h4><strong>Edge Options</strong></h4>
-          </div>
-          <div class="panel-body">
-
-            <div class="container-fluid">
-              <div class="row">
-                <div class="col-md-6 col-lg-6">
-                  <p>Edge Color: </p>
-                  <div class="btn-group">
-                      <button id="btnEdgeColor" type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-expand="false">
-                      Default Option<span class="caret"></span>
-                      </button>
-                      <ul class="dropdown-menu" role="menu">
-                          <li><a href="#" id="edgeColorListOne">Option 1</a></li>
-                          <li><a href="#" id="edgeColorListTwo">Option 2</a></li>
-                      </ul>
-                  </div>
-                </div>
-                <div class="col-md-6 col-lg-6">
-                  <p>Show Edges </p>
-                  <button id="tglEdge" type="button" class="btn btn-default" data-toggle="button">Off</button>
-                </div>
-              </div>
-
-            </div> <!-- END EDGE OPTIONS CONTAINER -->
-
-          </div>
-        </div>
-      </div>
-
-      <div class="col-sm-6 col-md-4 col-lg-3">
-        <div class="panel panel-info text-center">
-          <div class="panel-heading">
-            <h4><strong>Misc Options</strong></h4>
-          </div>
-          <div class="panel-body">
-
-            <div class="container-fluid">
-              <div class="row">
-                <div class="col-md-12 col-lg-12">
-                  <p>Year slider</p>
-                  <input id="date-slider" type="text" class="span2" value="" data-slider-min="2006" data-slider-max="2013" data-slider-step="1" data-slider-value="[2006,2013]"/>
-                </div>
-              </div>
-              <hr>
-              <div class="row">
-                <div class="col-md-12 col-lg-12">
-                  <p>Transition</p>
-                  <button id="tglTransition" type="button" class="btn btn-default" data-toggle="button">Off</button>
-                </div>
-              </div>
-            </div> <!-- END MISC OPTS CONTAINER -->
-
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </div>
-  <!-- END OPTIONS -->
 
   <!-- INFO & TIME SEQUENCE -->
   <div class="container-fluid">
@@ -243,7 +303,7 @@
                   <p>
                     From the start, this project seeked to leverage MUSC's participation in Open Linked Data.  All data utilized is available
                     via the MUSC SPARQL endpoint located <a target="_new" href="https://profiles.healthsciencessc.org/ProfilesSPARQLAPI/ProfilesSPARQLAPI.svc/Search">here</a>.
-                    Then endpoint can be accessed with SPARQL queries conforming to the <a target="_new" href="https://wiki.duraspace.org/display/VIVO/VIVO-ISF+Ontology">VIVO</a> ontology.
+                    The endpoint can be accessed with SPARQL queries conforming to the <a target="_new" href="https://wiki.duraspace.org/display/VIVO/VIVO-ISF+Ontology">VIVO</a> ontology.
                     The following is an example query for gathering author and publication identification data for 2006:
                   </p>
                   <br>
@@ -315,7 +375,7 @@
           </div>
           <div class="panel-body">
             <p>
-              <strong>Principal Investigator:</strong> <a target="_new" href="http://academicdepartments.musc.edu/psychiatry/faculty/obeidj.htm">Dr. Jihad Obeid Medical</a>, University of South Carolina - Biomedical Informatics Center
+              <strong>Principal Investigator:</strong> <a target="_new" href="http://academicdepartments.musc.edu/psychiatry/faculty/obeidj.htm">Dr. Jihad Obeid</a>, Medical University of South Carolina - Biomedical Informatics Center
             </p>
             <p>
               <strong>Principal Investigator:</strong> <a target="_new" href="http://compsci.cofc.edu/about/faculty-staff-listing/anderson-paul.php">Dr. Paul Anderson</a>, College of Charleston - Department of Data Science

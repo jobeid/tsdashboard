@@ -17,43 +17,71 @@ var dependencies = [
 define(dependencies, function(d3) {
 
   function GraphGenerator(data, properties) {
+
     var graph = this;
+
     graph.data = data || {nodes:[],links:[]};
+
     graph.properties = properties;
-    graph.vis = properties.svg;
-    graph.visGroup = graph.vis.append('g')
-      .attr('transform',properties.transform)
-      .attr('class', 'digraph')
+
+    graph.xScale = d3.scale.linear()
+      .domain([0, graph.properties.height])
+      .range([0, graph.properties.height]);
+
+    graph.yScale = d3.scale.linear()
+      .domain([0, graph.properties.height])
+      .range([0, graph.properties.height]);
+
+    graph.transform = function transform(d) {
+      return 'translate(' + graph.xScale(d.coors.x) + ',' + graph.yScale(d.coors.y) + ')';
+    }
+
+    graph.vis = properties.svg.attr('class', 'weber')
       .append('g')
-      .attr('clip-path', 'url(#clipBox)');
-    graph.fill = d3.scale.category20();
-    console.log(data);
+      .attr('transform', 'translate(' + (properties.height / 2) + ',' + ((properties.height / 2) + 50) + ')')
+      .call(d3.behavior.zoom().x(graph.xScale).y(graph.yScale).scaleExtent([1,16]).on("zoom", zoom))
+      .append('g')
+      .attr('class', 'digraph');
+
+
     graph.labels = [
-      {label:'C', x:0, y:-3000},
-      {label:'A', x:-3000, y:1750},
-      {label:'H', x:3000, y:1750}
+      {label:'C', x:0, y:-310},
+      {label:'A', x:-280, y:170},
+      {label:'H', x:280, y:170}
     ];
+
     // tooltip
-    graph.tooltip = d3.select('body').append('div').attr('class', 'tooltip').style('opacity', 0);
+    graph.tooltip = d3.select('body')
+      .append('div')
+      .attr('class', 'tooltip')
+      .style('opacity', 0);
 
     // bounding box
-    //graph.visGroup.append('rect').attr('class', 'frame').attr('width', properties.width).attr('height', properties.height);
+    graph.vis.append('rect')
+      .attr('class', 'frame')
+      .attr('width', properties.width)
+      .attr('height', properties.height)
+      .attr('x', (properties.height/-2))
+      .attr('y', (properties.height/-2));
 
     // scales
-    graph.heatFill = d3.scale.linear().range(['gray','red']);
-    graph.degreeScale = d3.scale.linear().range([10,60]).clamp(true);
-    graph.tsFill = d3.scale.linear().domain([0,1]).range([10,255]).clamp(true);
+    graph.heatFill = d3.scale.linear().range(['lightgray','red']);
+    graph.edgeColorScale = d3.scale.linear().range(['steelblue', 'red']);
+    graph.edgeWidthScale = d3.scale.linear().range([0.25,4]);
+    graph.radiusScale = d3.scale.linear()
+      .range([1,10])
+      .clamp(true);
 
-    // x / y scales
-    graph.xScale = d3.scale.linear().domain([0, 100]).range([0, (graph.properties.width * 6.5)]).nice();
-    graph.yScale = d3.scale.linear().domain([0, 100]).range([((graph.properties.height)* 6.5), 0]).nice();
-
+    graph.tsFill = d3.scale.linear()
+      .domain([0,1])
+      .range([10,255])
+      .clamp(true);
 
     // key function
     graph.keyFunc = function keyFunc(d) { return d.data.name; };
 
-    // r val function
-    graph.rVal = function(d) {
+    // value map function for nodes
+    graph.valMap = function(d) {
       if (graph.properties.nodeSize == 'Human') {
         return d.ts.H;
       }
@@ -64,87 +92,60 @@ define(dependencies, function(d3) {
         return d.ts.C;
       }
       if (graph.properties.nodeSize == 'Centrality') {
-        return graph.eigenScale(d.eigen);
+        return d.eigen;
       }
       if (graph.properties.nodeSize == 'Publication Count') {
         return d.pubCt;
       }
 
       if (graph.properties.nodeSize == 'Degree') {
-        return graph.degreeScale((d.data.hasOwnProperty('pmid')) ? d.inDegree: d.inDegree + d.outDegree);
+        return (d.data.hasOwnProperty('pmid')) ? d.inDegree: d.inDegree + d.outDegree;
       } else {
-        return graph.degreeScale((graph.properties.nodeSize == 'In Degree') ? d.inDegree: d.outDegree);
+        return (graph.properties.nodeSize == 'In Degree') ? d.inDegree: d.outDegree;
       }
     };
 
-    // x map function
-    graph.xMap = function(d) {
-      if (!graph.properties.weber) {
-        var x;
-        if (graph.properties.xAxis == 'Animal & Cell') {
-          x = Number(d.Animal) + Number(d.Cell);
-        } else {
-          x = d[graph.properties.xAxis];
-        }
-        return graph.xScale(x * 100);
-      } else {
-        return d.coors.x;
+    // value map function for edges
+    graph.edgeValMap = function(d) {
+      var sum;
+      if (graph.properties.edgeColor == 'Connection Density') {
+        return (d.density) ? d.density : d.conn.length;
       }
-    }
-
-    // y map function
-    graph.yMap = function(d) {
-      if (!graph.properties.weber) {
-        var y;
-        if (graph.properties.yAxis == 'Animal & Cell') {
-          y = Number(d.Animal) + Number(d.Cell);
-        } else {
-          y = d[graph.properties.yAxis];
-        }
-        return graph.yScale(y * 100);
-      } else {
-        return d.coors.y;
+      if (graph.properties.edgeColor == '# Publications (both)') {
+        sum = d.target.pubCt + d.source.pubCt;
+        return sum / 2;
+      }
+      if (graph.properties.edgeColor == '# Publications (either)') {
+        return (d.target.pubCt > d.source.pubCt) ? d.target.pubCt : d.source.pubCt;
+      }
+      if (graph.properties.edgeColor == 'Human Research') {
+        sum = Number(d.target.ts.H) + Number(d.source.ts.H);
+        return sum / 2;
+      }
+      if (graph.properties.edgeColor == 'Cell Research') {
+        sum = Number(d.target.ts.C) + Number(d.source.ts.C);
+        return sum / 2;
+      }
+      if (graph.properties.edgeColor == 'Animal Research') {
+        sum = Number(d.target.ts.A) + Number(d.source.ts.A);
+        return sum / 2;
+      }
+      if (graph.properties.edgeColor == 'Animal & Cell Research') {
+        sum = Number(d.target.ts.A) + Number(d.source.ts.A)
+          + Number(d.target.ts.C) + Number(d.source.ts.C);
+        return sum / 2;
       }
     }
 
 
     // setup groups for edges and vertices
-    graph.edges = graph.visGroup.append('g').selectAll('g');
-    graph.vertices = graph.visGroup.append('g').selectAll('g');
-    graph.trails = graph.visGroup.append('g').selectAll('g');
-
-    // define markers for edges -- note may have to apply the markers to the
-    // vis before binding it to the context
-    // var arrows = graph.visGroup.append('svg:defs');
-    // arrows.append('svg:marker')
-    //   .attr('id', graph.properties.marker.id)
-    //   .attr('viewBox', graph.properties.marker.view)
-    //   // .attr('refX', function(d) {
-    //   //   return (graph.calcNRad(d) + 5);
-    //   // })
-    //   .attr('refX', graph.properties.marker.rX)
-    //   .attr('refY', graph.properties.marker.rY)
-    //   .attr('markerWidth', graph.properties.marker.width)
-    //   .attr('markerHeight', graph.properties.marker.height)
-    //   .attr('orient', 'auto')
-    //   .attr('class', graph.properties.marker.classString)
-    //   .append('svg:path')
-    //   .attr('d', 'M0,-5L10,0L0,5');
-
-    // attach axii and labels
-    // graph.xAxisG = graph.visGroup.append('g')
-    //   .attr('class', 'axis')
-    //   .attr('transform', 'translate(' + (properties.margin.left - 50) + ',' + (properties.height * 7) + ')');
-    // graph.xAxisG.append('text').attr('class', 'x');
-    // graph.yAxisG =	graph.visGroup.append('g')
-    //   .attr('class', 'axis')
-    //   .attr('transform', 'translate(' + ((properties.margin.left + properties.margin.right) * 2) +',' + (properties.margin.top) + ')');
-    // graph.yAxisG.append('text').attr('class', 'y');
-
+    graph.edges = graph.vis.append('g').selectAll('g');
+    graph.vertices = graph.vis.append('g').selectAll('g');
+    graph.trails = graph.vis.append('g').selectAll('g');
 
 
     // draw labels
-    graph.visGroup.selectAll('.tri-label')
+    graph.vis.selectAll('.tri-label')
       .data(graph.labels).enter()
       .append('text')
       .attr('x', function(d) { return d.x; })
@@ -164,17 +165,16 @@ define(dependencies, function(d3) {
       .text(function(d) { return d.label; });
 
     // draw overlay and hide
-    var overlay = [{x1: 0, y1: -3750, x2: -3750, y2: 1950, cssClass:'overlay-outer overlay'},
-      {x1: 0, y1: -3750, x2: 3750, y2: 1950, cssClass:'overlay-outer overlay'},
-      {x1: -3750, y1: 1950, x2: 3750, y2: 1950, cssClass:'overlay-outer overlay'},
-      {x1: -3750, y1: 1950, x2: 1875, y2: -875, cssClass:'sub-overlay overlay'},
-      {x1: 0, y1: -3750, x2: 0, y2: 1950, cssClass:'sub-overlay overlay'},
-      {x1: -1875, y1: -875, x2: 1875, y2: -875, cssClass:'sub-overlay overlay'},
-      {x1: -1875, y1: -875, x2: 0, y2: 1950, cssClass:'sub-overlay overlay'},
-      {x1: 0, y1: 1950, x2: 1875, y2: -875, cssClass:'sub-overlay overlay'},
-      {x1: 3750, y1: 1950, x2: -1875, y2: -875, cssClass: 'trans-axis overlay'}];
+    var overlay = [
+      {x1: 0, y1: -300, x2: 0, y2: 0, cssClass:'overlay'},
+      {x1: -260, y1: 150, x2: 0, y2: 0, cssClass:'overlay'},
+      {x1: 260, y1: 150, x2: 0, y2: 0, cssClass:'trans-axis overlay'},
+      // {x1: 0, y1: 130, x2: 0, y2: 0, cssClass:'overlay'},
+      {x1: -260, y1: 150, x2: 260, y2: 150, cssClass:'overlay'},
+      {x1: 0, y1: -300, x2: 260, y2: 150, cssClass:'overlay'},
+      {x1: 0, y1: -300, x2: -260, y2: 150, cssClass:'overlay'}];
 
-    graph.visGroup.selectAll('overlay')
+    graph.vis.selectAll('overlay')
       .data(overlay).enter()
       .append('line')
       .attr('x1', function(d){ return d.x1; })
@@ -183,47 +183,60 @@ define(dependencies, function(d3) {
       .attr('y2', function(d){ return d.y2; })
       .attr('class', function(d){ return d.cssClass; });
 
-
-    graph.title = graph.visGroup.append('text')
+    graph.title = graph.vis.append('text')
       .attr('class', 'graph-title')
-      .attr('x', -4000)
-      .attr('y', -2000)
+      .attr('x', -250)
+      .attr('y', -250)
       .text('Title');
 
+    function zoom() {
+      d3.selectAll('.overlay')
+        .attr('transform',
+        'translate(' + d3.event.translate + ')scale(' + d3.event.scale + ')');
 
+      graph.vertices.attr('transform', graph.transform);
 
-    window.onresize = function() {
-      graph.reSizeGraph(graph.vis);
-    }
+      d3.selectAll('.link')
+        .attr('transform',
+        'translate(' + d3.event.translate + ')scale(' + d3.event.scale + ')');
+
+      d3.selectAll('.trails')
+        .attr('transform',
+        'translate(' + d3.event.translate + ')scale(' + d3.event.scale + ')');
+    };
+
+    // window.onresize = function() {
+    //   graph.reSizeGraph(graph.vis);
+    // }
   }; // END OBJECT CONSTRUCTOR
 
 
 
   GraphGenerator.prototype.propogateUpdate = function() {
     var graph = this;
+
+    console.log(graph.data);
+
     graph.eigenScale = d3.scale.linear().domain(
         d3.extent(graph.data.nodes, function(d){ return d.eigen; })
       )
       .range([20,100]).clamp(true);
 
+    // reset all scale domains
     graph.heatFill.domain(d3.extent(graph.data.nodes, function(d) {
-      if(graph.properties.nodeColor == 'Degree') {
-        return d.inDegree+d.outDegree;
-      }
-      if(graph.properties.nodeColor == 'Out Degree') {
-        return d.outDegree;
-      }
-      if(graph.properties.nodeColor == 'In Degree') {
-        return d.inDegree;
-      }
-      if(graph.properties.nodeColor == 'Publication Count') {
-        return d.pubCt;
-      }
-
+      return graph.valMap(d);
     }));
 
-    graph.degreeScale.domain(d3.extent(graph.data.nodes, function(d) {
-      return d.inDegree + d.outDegree;
+    graph.radiusScale.domain(d3.extent(graph.data.nodes, function(d) {
+      return graph.valMap(d);
+    }));
+
+    graph.edgeColorScale.domain(d3.extent(graph.data.links, function(d) {
+      return graph.edgeValMap(d);
+    }));
+
+    graph.edgeWidthScale.domain(d3.extent(graph.data.links, function(d) {
+      return graph.edgeValMap(d);
     }));
 
     // UPDATE TITLE
@@ -235,30 +248,6 @@ define(dependencies, function(d3) {
       }
     });
 
-    // UPDATE AXII
-    // graph.xAxis = d3.svg.axis().scale(graph.xScale).orient('bottom');
-    // graph.xAxisG
-    //   .call(graph.xAxis);
-    // d3.selectAll('text.x')
-    //   .attr('x', (graph.properties.width/2))
-    //   .attr('y', 30)
-    //   .attr('dy', '.71em')
-    //   .attr('class', 'x title-axis')
-    //   .style('text-anchor', 'middle')
-    //   .text(function() { return graph.properties.xAxis; });
-    // graph.yAxis = d3.svg.axis().scale(graph.yScale).orient('left');
-    // graph.yAxisG
-    //   .call(graph.yAxis);
-    // d3.selectAll('text.y')
-    //   .attr('x', ((graph.properties.height - graph.properties.margin.bottom) / 2) * -1)
-    //   .attr('y', -60)
-    //   .attr('dy', '.71em')
-    //   .attr('transform', 'rotate(-90)')
-    //   .attr('class', 'y title-axis')
-    //   .style('text-anchor', 'middle')
-    //   .text(function() { return graph.properties.yAxis; });
-
-
 
     // // // EDGES
     graph.edges = graph.edges.data(graph.data.links);
@@ -268,7 +257,22 @@ define(dependencies, function(d3) {
 
     // // En + U
     graph.edges
-      .attr('d', function(d) { return getArcSpecs(d); })
+      .on('mouseover', function(d) {
+        var label = '<p>Source: ' + d.source.data.name
+          + '</p><p>Target: ' + d.target.data.name
+          + '</p><p>Publications shared: ' + d.conn.length
+          +'</p>';
+
+          graph.tooltip.transition().duration(200).style('opacity', 0.8);
+
+          graph.tooltip.html(label)
+            .attr('width', (label.length + 20)+'px')
+            .style('left', d3.event.pageX + 'px')
+            .style('top', (d3.event.pageY - 28) + 'px');
+      })
+      .on('mouseout', function() {
+        graph.tooltip.transition().duration(200).style('opacity', 0);
+      })
       .attr('class', function(d) {
         var classString = 'link ';
 
@@ -282,7 +286,17 @@ define(dependencies, function(d3) {
           classString += 'nodesActive';
         }
         return classString;
+      })
+      .transition()
+      .duration(300)
+      .attr('d', function(d) { return getArcSpecs(d); })
+      .attr('stroke-width', function(d) {
+        return graph.edgeWidthScale(graph.edgeValMap(d));
+      })
+      .attr('stroke', function(d) {
+        return graph.edgeColorScale(graph.edgeValMap(d));
       });
+
     // // Ex
     graph.edges.exit().remove();
 
@@ -294,55 +308,48 @@ define(dependencies, function(d3) {
       .attr('class', 'node');
 
     // Before vertex-update calculate and animate node trails
-    if (graph.properties.previous.length>0 && graph.properties.Trails) {
-      var tpaths = {};
+    var newPrevious = [],
+      tpaths = [];
 
-      graph.properties.previous.forEach(function(node) {
-        if (tpaths[node.data.name]) {
-          tpaths[node.data.name].x1 = node.coors.x;
-          tpaths[node.data.name].y1 = node.coors.y;
+    graph.data.nodes.forEach(function(node) {
+      if (graph.properties.previous[node.data.name]) {
+
+        tpaths.push({
+          x1:graph.properties.previous[node.data.name].coors.x,
+          y1:graph.properties.previous[node.data.name].coors.y,
+          x2:node.coors.x,
+          y2:node.coors.y,
+          active:node.active
+        });
+      }
+      newPrevious.push(node);
+    });
+
+    graph.properties.previous = d3.map(newPrevious,
+      function(d) { return d.data.name; })['_'];
+
+    graph.trails = graph.trails.data(tpaths);
+
+    graph.trails.enter().append('line')
+      .attr('class', 'trails');
+
+    graph.trails
+      .attr('x1', function(d) { return d.x1; })
+      .attr('y1', function(d) { return d.y1; })
+      .attr('x2', function(d) { return d.x2; })
+      .attr('y2', function(d) { return d.y2; })
+      .attr('stroke-dasharray', (3000 + ', ' + 3000))
+      .attr('stroke-dashoffset', 3000)
+      .attr('class', function(d) {
+        if (d.active && graph.properties.Trails) {
+          return 'trails active';
         } else {
-          tpaths[node.data.name] = {x1:node.coors.x, y1:node.coors.y, x2:null, y2:null, active:null};
+          return 'trails inactive';
         }
-
-      });
-      graph.data.nodes.forEach(function(node) {
-
-        if (tpaths[node.data.name]) {
-          tpaths[node.data.name].x2 = node.coors.x;
-          tpaths[node.data.name].y2 = node.coors.y;
-          tpaths[node.data.name].active = node.active && tpaths[node.data.name].active;
-        } else {
-          tpaths[node.data.name] = {x2:node.coors.x, y2:node.coors.y, x1:null, y1:null, active:node.active};
-        }
-
-      });
-
-      tpaths = d3.map(tpaths).values();
-      graph.trails = graph.trails.data(tpaths);
-
-      graph.trails.enter().append('line')
-        .attr('class', 'trails');
-
-      graph.trails
-        .attr('x1', function(d) { return d.x1; })
-        .attr('y1', function(d) { return d.y1; })
-        .attr('x2', function(d) { return d.x2; })
-        .attr('y2', function(d) { return d.y2; })
-        .attr('stroke-dasharray', (3000 + ', ' + 3000))
-        .attr('stroke-dashoffset', 3000)
-        .attr('class', function(d) {
-          if (d.active) {
-            return 'trails active';
-          } else {
-            return 'trails inactive';
-          }
-        })
-        .transition()
-        .duration(1750)
-        .attr('stroke-dashoffset', 0);
-    }
-
+      })
+      .transition()
+      .duration(1700)
+      .attr('stroke-dashoffset', 0);
 
     // En + U
     graph.vertices
@@ -373,34 +380,14 @@ define(dependencies, function(d3) {
       })
       .transition()
       .duration(1000)
-      .attr('r', graph.rVal)
+      .attr('r', function(d) {
+        return graph.radiusScale(graph.valMap(d));
+      })
       .style('fill', function(d) {
-        if (graph.properties.nodeColor == 'Human') {
-          return 'RGB(0,'+ graph.tsFill(d.ts.H).toFixed() +',0)';
-        }
-        if (graph.properties.nodeColor == 'Animal') {
-          return 'RGB('+ graph.tsFill(d.ts.A).toFixed() +',0,0)';
-        }
-        if (graph.properties.nodeColor == 'Cell') {
-          return 'RGB(0,0,'+ graph.tsFill(d.ts.C).toFixed() +')';
-        }
-
         if(graph.properties.nodeColor == 'Trans Science') {
           return 'RGB('+graph.tsFill(d.ts.A).toFixed()+','+graph.tsFill(d.ts.H).toFixed()+','+graph.tsFill(d.ts.C).toFixed()+')';
         }
-        if(graph.properties.nodeColor == 'Degree') {
-          return (d.data.hasOwnProperty('pmid')) ? graph.heatFill(d.inDegree): graph.heatFill(d.inDegree+d.outDegree);
-        }
-        if(graph.properties.nodeColor == 'Out Degree') {
-          return graph.heatFill(d.outDegree);
-        }
-        if(graph.properties.nodeColor == 'In Degree') {
-          return graph.heatFill(d.inDegree);
-        }
-        if(graph.properties.nodeColor == 'Publication Count') {
-          return graph.heatFill(d.pubCt);
-        }
-
+        return graph.heatFill(graph.valMap(d));
       })
       .attr('class', function(d) {
         if (d.active) {
@@ -409,21 +396,11 @@ define(dependencies, function(d3) {
           return 'node inactive';
         }
       })
-      .attr('cx', graph.xMap)
-      .attr('cy', graph.yMap);
+      .attr('transform', graph.transform);
 
 
     // // remove old
     graph.vertices.exit().transition().remove();
-    graph.properties.previous = graph.data.nodes.slice(0);
-
-    // if (!graph.properties.weber) {
-    //   d3.selectAll('.axis').style('stroke-opacity', 1);
-    //   d3.selectAll('.overlay').style('stroke-opacity', 0);
-    // } else {
-    //   d3.selectAll('.axis').style('stroke-opacity', 0);
-    //   d3.selectAll('.overlay').style('stroke-opacity', 1);
-    // }
 
     return true;
 
@@ -473,10 +450,6 @@ define(dependencies, function(d3) {
     d3.select('.digraph').attr('transform', 'translate('+
       (p.width* 0.52)+','+
       (p.height* 0.65)+')scale(0.1)');
-  };
-
-  GraphGenerator.prototype.zoom = function() {
-    d3.select('.digraph').attr('transform', 'translate(' + d3.event.translate + ')scale(' + d3.event.scale + ')');
   };
 
   GraphGenerator.prototype.dragStart = function() {

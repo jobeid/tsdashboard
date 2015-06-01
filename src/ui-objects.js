@@ -17,10 +17,11 @@ var dependencies = [
   'spinner',
   'dropdownCheckbox',
   'slider',
+  'heat-map-dynamic',
   'heat-map'
 ];
 
-define(dependencies, function($, d3, properties, parseData, GraphGenerator, Spinner, dropdownCheckbox, Slider, heatmap) {
+define(dependencies, function($, d3, properties, parseData, GraphGenerator, Spinner, dropdownCheckbox, Slider, dynamicHeatmap, heatmap) {
   var spinnerOpts = {
     lines: 13, // The number of lines to draw
     length: 20, // The length of each line
@@ -79,15 +80,15 @@ define(dependencies, function($, d3, properties, parseData, GraphGenerator, Spin
     var current = d3.select('#btnNodePerspective').text().trim()
     var next = d3.select(this).text().trim();
     d3.select(this).text(current);
-    d3.select('#btnNodePerspective').html(next+uiObjects.span);
+    d3.select('#btnNodePerspective').html(next+span);
     properties.mesh = [];
-    this.meshTermFilter.dropdownCheckbox('reset', []);
+    properties.ui.meshTermFilter.dropdownCheckbox('reset', []);
     properties.nodeFilter = [];
-    this.nodeFilter.dropdownCheckbox('reset', []);
+    properties.ui.nodeFilter.dropdownCheckbox('reset', []);
     properties.previous = [];
     properties[current] = false;
     properties[next] = true;
-    this.render();
+    render();
   };
 
   function updateNodeSize() {
@@ -108,23 +109,14 @@ define(dependencies, function($, d3, properties, parseData, GraphGenerator, Spin
     properties.graph.propogateUpdate();
   };
 
-  function updateXaxis() {
-    var current = d3.select('#btnXaxis').text().trim();
+  function updateEdgeColor() {
+    var current = d3.select('#btnEdgeColor').text().trim();
     var next = d3.select(this).text().trim();
-    properties.xAxis = next;
+    properties.edgeColor = next;
     d3.select(this).text(current);
-    d3.select('#btnXaxis').html(next+uiObjects.span);
-    graph.propogateUpdate();
-  };
-
-  function updateYaxis() {
-    var current = d3.select('#btnYaxis').text().trim();
-    var next = d3.select(this).text().trim();
-    properties.yAxis = next;
-    d3.select(this).text(current);
-    d3.select('#btnYaxis').html(next+uiObjects.span);
-    graph.propogateUpdate();
-  };
+    d3.select('#btnEdgeColor').html(next+span);
+    properties.graph.propogateUpdate();
+  }
 
   function transition() {
     if (properties.range.lo != 2013) {
@@ -133,6 +125,8 @@ define(dependencies, function($, d3, properties, parseData, GraphGenerator, Spin
       properties.range.lo = 2006;
       properties.range.hi = 2006;
     }
+    properties.dhm.year = properties.range.lo;
+    properties.dhm.propogateUpdate();
     properties.ui.dateSlider.setValue([properties.range.lo,properties.range.hi]);
     properties.ui.render();
   };
@@ -150,31 +144,40 @@ define(dependencies, function($, d3, properties, parseData, GraphGenerator, Spin
       cohort = {'2006':[]},
       densities = {},
       dat = [],
-      raw = parseData(properties.pubHash.getData({range:{lo:2006,hi:2006},mesh:properties.mesh}), properties).nodes;
+      raw = parseData(properties.pubHash.getData({range:{lo:2006,hi:2006},
+        mesh:properties.mesh}), properties).nodes;
 
     var lines = [
-        function(x) { return -1.52*x-2325; },
-        function(x) { return -1.52*x-900; },
-        function(x) { return -1.52*x-187.5; },
-        function(x) { return -1.52*x+525; },
-        function(x) { return -1.52*x+1950; },
-        function(x) { return -1.52*x+3375; },
-        function(x) { return -1.52*x+4800; }
+        function(x) { return -1.52*x-225; },
+        function(x) { return -1.52*x-150; },
+        function(x) { return -1.52*x-75; },
+        function(x) { return -1.52*x+0; },
+        function(x) { return -1.52*x+75; },
+        function(x) { return -1.52*x+150; },
+        function(x) { return -1.52*x+300; }
     ];
 
-    //
-    // raw.forEach(function(node) {
-    //   if ((lines[1](node.coors.x) > node.coors.y) || (Number(node.ts.H)<0.2)) {
-    //     pids.push(node.data.pid);
-    //     cohort['2006'].push(node);
-    //   }
-    // });
-
+    var that = this;
     raw.forEach(function(node) {
-      if (lines[2](node.coors.x) > node.coors.y) {
-        pids.push(node.data.pid);
-        cohort['2006'].push(node);
+
+      if (node.data.isEveryYear()) {
+        if (that.properties.cohort.min == 0 &&
+          lines[that.properties.cohort.max](node.coors.x) > node.coors.y) {
+
+          pids.push(node.data.pid);
+          cohort['2006'].push(node);
+        } else {
+          if (lines[that.properties.cohort.max](node.coors.x) > node.coors.y &&
+            lines[that.properties.cohort.min-1](node.coors.x) < node.coors.y) {
+
+            pids.push(node.data.pid);
+            cohort['2006'].push(node);
+          }
+        }
+      } else {
+        console.log('author not in every year');
       }
+
     });
 
     for (var i=2007; i<2014; i++) {
@@ -201,48 +204,29 @@ define(dependencies, function($, d3, properties, parseData, GraphGenerator, Spin
       }
     }
 
-    console.log(cohort);
-    console.log(densities);
+    if (!this.properties.shm) {
+      this.properties.shm = new heatmap(this.properties);
+    }
 
+    if (!this.properties.dhm) {
+      this.properties.dhm = new dynamicHeatmap(this.properties);
+    }
 
-    new heatmap(dat);
+    this.properties.dhm.updateData(dat.slice(0,dat.length-1));
+    this.properties.shm.updateData(dat);
+
 
     function calcZone(coors) {
 
-      for (var i=0; i<lines.length; i++) {
+      for (var i=0; i<lines.length-1; i++) {
         if (lines[i](coors.x) > coors.y) {
           return i;
         }
       }
-      return lines.length;
+      return lines.length-1;
     };
   };
 
-  // function calcTrendData(callback) {
-  //   trendMap.clear();
-  //
-  //   for (var i=0; i < 7; i++) {
-  //     trendMap.addData((2006+i).toFixed(), parseData(properties.pubHash.getData({range:{lo:(2006+i),hi:(2006+i)},mesh:properties.mesh}), properties).nodes, null);
-  //   }
-  //   properties.trendData = trendMap.addData('2013', parseData(properties.pubHash.getData({range:{lo:2013,hi:2013},mesh:properties.mesh}), properties).nodes, trendMap.aggregate);
-  //   callback();
-  // };
-  //
-  // function showTrends() {
-  //
-  //   if (properties.aTrend) {
-  //     properties.aTrend.updateData(properties.trendData.A);
-  //     properties.aTrend.propogateUpdate();
-  //     properties.cTrend.updateData(properties.trendData.C);
-  //     properties.cTrend.propogateUpdate();
-  //     properties.hTrend.updateData(properties.trendData.H);
-  //     properties.hTrend.propogateUpdate();
-  //   } else {
-  //     properties.aTrend = new TrendChart('A', properties.trendData.A);
-  //     properties.cTrend = new TrendChart('C', properties.trendData.C);
-  //     properties.hTrend = new TrendChart('H', properties.trendData.H);
-  //   }
-  // };
 
   function updateFilter(filter, items) {
     var newList = [],
@@ -294,16 +278,19 @@ define(dependencies, function($, d3, properties, parseData, GraphGenerator, Spin
         properties.range.hi = d.value[1];
         render();
       });
-
-      properties.transform = 'translate('+
-        (properties.width* 0.52)+','+
-        (properties.height* 0.65)+')scale(0.1)';
+      this.cohortSlider = new Slider('#cohort-slider', {});
+      this.cohortSlider.setValue([0,1], true);
+      this.cohortSlider.on('slideStop', function(d) {
+        properties.cohort.min = d.value[0];
+        properties.cohort.max = d.value[1];
+        properties.ui.renderHeatMap();
+      });
 
       properties.svg = d3.select('.chart').append('svg')
         .attr('width', properties.width)
         .attr('height', properties.height);
 
-      // attach behavior to UI interaction
+      // attach behavior to UI
 
       // FILTER UPDATE
       d3.select('#btnApplyFilters').on('click', applyFilters);
@@ -318,16 +305,6 @@ define(dependencies, function($, d3, properties, parseData, GraphGenerator, Spin
       d3.select('#nodeSizeListSix').on('click', updateNodeSize);
       d3.select('#nodeSizeListSeven').on('click', updateNodeSize);
 
-      // X AXIS
-      d3.select('#xAxisListOne').on('click', updateXaxis);
-      d3.select('#xAxisListTwo').on('click', updateXaxis);
-      d3.select('#xAxisListThree').on('click', updateXaxis);
-
-      // Y AXIS
-      d3.select('#yAxisListOne').on('click', updateYaxis);
-      d3.select('#yAxisListTwo').on('click', updateYaxis);
-      d3.select('#yAxisListThree').on('click', updateYaxis);
-
       // NODE COLOR DD
       d3.select('#nodeColorListOne').on('click', updateNodeColor);
       d3.select('#nodeColorListTwo').on('click', updateNodeColor);
@@ -336,6 +313,13 @@ define(dependencies, function($, d3, properties, parseData, GraphGenerator, Spin
       d3.select('#nodeColorListFive').on('click', updateNodeColor);
       d3.select('#nodeColorListSix').on('click', updateNodeColor);
       d3.select('#nodeColorListSeven').on('click', updateNodeColor);
+
+      // EDGE COLOR DD
+      d3.select('#edgeColorListOne').on('click', updateEdgeColor);
+      d3.select('#edgeColorListTwo').on('click', updateEdgeColor);
+      d3.select('#edgeColorListThree').on('click', updateEdgeColor);
+      d3.select('#edgeColorListFour').on('click', updateEdgeColor);
+      d3.select('#edgeColorListFive').on('click', updateEdgeColor);
 
       // TOGGLES
       d3.select('#tglEdge').on('click', function() {
@@ -353,26 +337,7 @@ define(dependencies, function($, d3, properties, parseData, GraphGenerator, Spin
         }
 
       });
-      d3.select('#tglWeber').on('click', function() {
-        // var tog = d3.select(this);
-        // if (tog.text() == 'On') {
-        //   tog.attr('class', 'btn btn-default').text('Off');
-        //   d3.select('.digraph')
-        //     .transition()
-        //     .delay(500)
-        //     .attr('transform', 'translate('
-        //     + (properties.margin.right+properties.margin.left)
-        //     + ',' + properties.margin.top + ')scale(0.1)');
-        // } else {
-        //   tog.attr('class', 'btn btn-info').text('On');
-        //   d3.select('.digraph')
-        //     .transition()
-        //     .delay(500)
-        //     .attr('transform', 'translate(550,500)scale(0.1)');
-        // }
-        // properties.weber = !properties.weber;
-        // render();
-      });
+
       d3.select('#tglTransition').on('click', function() {
         var tog = d3.select(this);
 
@@ -385,6 +350,7 @@ define(dependencies, function($, d3, properties, parseData, GraphGenerator, Spin
           properties.interval = setInterval(transition, 2500);
         }
       });
+
       d3.select('#tglTrails').on('click', function() {
         var tog = d3.select(this);
         if (tog.text() == 'On') {
@@ -394,7 +360,7 @@ define(dependencies, function($, d3, properties, parseData, GraphGenerator, Spin
         } else {
           tog.attr('class', 'btn btn-info').text('On');
           properties.Trails = true;
-
+          d3.selectAll('.trails.inactive').attr('class', 'trails active');
         }
       });
     };
