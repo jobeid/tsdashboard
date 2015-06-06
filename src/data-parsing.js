@@ -57,6 +57,7 @@ define(dependencies, function(ts, vectorize) {
     return data;
 
     // HELPER FUNCTIONS
+    
 
     function isAuthInRangeIntersection(yearsInAuthorship) {
       // if the author is not in authorship for every year

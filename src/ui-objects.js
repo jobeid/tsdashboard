@@ -18,10 +18,11 @@ var dependencies = [
   'dropdownCheckbox',
   'slider',
   'heat-map-dynamic',
-  'heat-map'
+  'heat-map',
+  'select2'
 ];
 
-define(dependencies, function($, d3, properties, parseData, GraphGenerator, Spinner, dropdownCheckbox, Slider, dynamicHeatmap, heatmap) {
+define(dependencies, function($, d3, properties, parseData, GraphGenerator, Spinner, dropdownCheckbox, Slider, dynamicHeatmap, heatmap, select2) {
   var spinnerOpts = {
     lines: 13, // The number of lines to draw
     length: 20, // The length of each line
@@ -58,8 +59,12 @@ define(dependencies, function($, d3, properties, parseData, GraphGenerator, Spin
   },
   span = '<span class="caret"></span>';
 
+  function fetchData() {
+    properties.data = parseData(properties.pubHash.getData({range:properties.range,mesh:properties.mesh}), properties);
+  };
+
   function render() {
-    var data = parseData(properties.pubHash.getData({range:properties.range,mesh:properties.mesh}), properties);
+    var data = properties.data;
 
 
     if (properties.graph) {
@@ -71,9 +76,8 @@ define(dependencies, function($, d3, properties, parseData, GraphGenerator, Spin
       properties.graph = new GraphGenerator(data, properties);
       properties.graph.propogateUpdate();
     }
-
-    updateFilter('nodeFilter', data.nodes);
-    updateFilter('meshTermFilter', data.mesh);
+    // updateFilter('nodeFilter', data.nodes);
+    // updateFilter('meshTermFilter', data.mesh);
   };
 
   function updatePerspective() {
@@ -132,11 +136,14 @@ define(dependencies, function($, d3, properties, parseData, GraphGenerator, Spin
   };
 
   function applyFilters() {
-    properties.mesh = properties.ui.meshTermFilter.dropdownCheckbox('checked');
-    properties.nodeFilter = properties.ui.nodeFilter.dropdownCheckbox('checked');
+    var mesh = properties.ui.meshSelect.select2('data');
+    // var nodeFilter = properties.ui.nodeFilter.dropdownCheckbox('checked');
+
+    // if any of a nodes mesh match any of the filter mesh it will be active
+    
+    });
 
     render();
-    //calcTrendData(showTrends);
   };
 
   function renderHeatMap() {
@@ -175,7 +182,7 @@ define(dependencies, function($, d3, properties, parseData, GraphGenerator, Spin
           }
         }
       } else {
-        console.log('author not in every year');
+        // console.log('author not in every year');
       }
 
     });
@@ -240,7 +247,7 @@ define(dependencies, function($, d3, properties, parseData, GraphGenerator, Spin
     items.forEach(function(item) {
       var label = (item.hasOwnProperty('data')) ? item.data.name : item;
       if (persistent.indexOf(label) == -1) {
-        newList.push({id:count, label:label, isChecked:false});
+        newList.push({id:count, label:label, text:label, isChecked:false});
         count+=1;
       }
 
@@ -250,6 +257,10 @@ define(dependencies, function($, d3, properties, parseData, GraphGenerator, Spin
       if(a.label < b.label) return -1;
       if(a.label > b.label) return 1;
       return 0;
+    });
+
+    properties.ui[filter].select2({
+      data: arr
     });
 
     properties.ui[filter].dropdownCheckbox('reset', arr);
@@ -267,6 +278,19 @@ define(dependencies, function($, d3, properties, parseData, GraphGenerator, Spin
     this.init = function() {
       properties.ui = this;
       this.spinner = new Spinner(spinnerOpts);
+
+      this.meshSelect = $('#meshTermFilter');
+      this.meshSelect.select2({
+        multiple:true,
+        data:[]
+      });
+
+      this.nodeFilter = $('#nodeFilter');
+      this.nodeFilter.select2({
+        multiple:true,
+        data:[]
+      });
+
       this.meshTermFilter = $('.mesh-term-filter');
       this.meshTermFilter.dropdownCheckbox(meshD);
       this.nodeFilter = $('.node-filter');
@@ -276,7 +300,10 @@ define(dependencies, function($, d3, properties, parseData, GraphGenerator, Spin
       this.dateSlider.on('slideStop', function(d) {
         properties.range.lo = d.value[0];
         properties.range.hi = d.value[1];
+        fetchData();
+        applyFilters();
         render();
+        // update mesh here only?
       });
       this.cohortSlider = new Slider('#cohort-slider', {});
       this.cohortSlider.setValue([0,1], true);
@@ -369,7 +396,6 @@ define(dependencies, function($, d3, properties, parseData, GraphGenerator, Spin
     this.transition = transition;
     this.updateFilter = updateFilter;
     this.renderHeatMap = renderHeatMap;
-    // this.calcTrendData = calcTrendData;
-    // this.showTrends = showTrends;
+    this.fetchData = fetchData;
   }
 });

@@ -5,6 +5,9 @@ html {
 body, div, svg {
   font-family: Roboto Slab; }
 
+.filter-select {
+  width: 75%; }
+
 .legend {
   font-family: Roboto Slab;
   stroke: black;

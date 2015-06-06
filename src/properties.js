@@ -16,6 +16,7 @@ define(dependencies, function(d3, PubHash, deptData) {
   var properties = {
     pubHash: new PubHash(),
     deptData: deptData,
+    data: [],
     svg: null,
     graph: null,
     dhm: null, // dynamic heat map

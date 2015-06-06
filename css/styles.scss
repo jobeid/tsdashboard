@@ -20,6 +20,10 @@ body, div, svg {
   font-family: $font;
 }
 
+.filter-select {
+  width: 75%;
+}
+
 .legend {
   font-family: $font;
   stroke: black;

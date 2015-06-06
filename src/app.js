@@ -46,10 +46,9 @@ require(dependencies, function(queue, d3, ui) {
   };
 
   function initialize() {
-    //console.log(app.properties.pubHash);
     app.init();
+    app.fetchData();
     app.render();
-    console.log(app);
     finishLoad();
   }
 

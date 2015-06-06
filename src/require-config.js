@@ -18,6 +18,7 @@ require.config({
     'spinner': '../lib/modules/spin.min',
     'slider': '../lib/modules/bootstrap-slider',
     'dropdownCheckbox': '../lib/modules/bootstrap-dropdown-checkbox.min',
+    'select2': '//cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/js/select2.min',
     'app': 'app'
   },
   deps: ['app']
