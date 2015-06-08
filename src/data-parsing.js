@@ -57,7 +57,28 @@ define(dependencies, function(ts, vectorize) {
     return data;
 
     // HELPER FUNCTIONS
-    
+
+    function isActive(filter) {
+      var m = true, n = true, f = false;
+
+      if (filter.mesh.length > 0) {
+        // if at least one mesh term matches the filter
+        filter.mesh.forEach(function(term) {
+          if (this.mesh.indexOf(term.text) != -1) {
+            f = true;
+          }
+        });
+        m = f;
+      }
+      if (filter.node.length > 0) {
+        n = filter.node.filter(function(d) {
+          return d.text == this.name;
+        }) == 1;
+      }
+
+      return m && n;
+    };
+
 
     function isAuthInRangeIntersection(yearsInAuthorship) {
       // if the author is not in authorship for every year
@@ -153,6 +174,7 @@ define(dependencies, function(ts, vectorize) {
               tempNodes[pAuth].coors = {x:0,y:0};
               tempNodes[pAuth].pmids = [];
               tempNodes[pAuth].active = true;
+              tempNodes[pAuth].isActive = isActive;
             }
 
             tempNodes[pAuth].ts.plus(pub.ts);
@@ -174,6 +196,7 @@ define(dependencies, function(ts, vectorize) {
                   tempNodes[sAuth].coors = {x:0,y:0};
                   tempNodes[sAuth].pmids = [];
                   tempNodes[sAuth].active = true;
+                  tempNodes[sAuth].isActive = isActive;
                 }
                 var linkKey = sAuth+'-'+pAuth;
                 if(!tempLinks[linkKey]) {

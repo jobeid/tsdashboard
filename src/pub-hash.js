@@ -14,7 +14,8 @@ var dependencies = [
 
 define(dependencies, function(Author, Publication) {
 
-  var PubHash = function() {
+  var PubHash = function(props) {
+    this.props = props;
     this.publications = {};
     this.authors = {};
     this.meshTrends = {
@@ -105,7 +106,7 @@ define(dependencies, function(Author, Publication) {
 
   PubHash.prototype.loadAuthors = function(author, pid) {
     if(!this.authors[author]) {
-      this.authors[author] = new Author(author, pid);
+      this.authors[author] = new Author(author, pid, this.props.deptData.getDeptName(pid));
     }
   };
 

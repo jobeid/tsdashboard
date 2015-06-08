@@ -11,6 +11,7 @@
 var dependencies = [
   'jquery',
   'd3',
+  'select2',
   'properties',
   'data-parsing',
   'graph-generator',
@@ -18,8 +19,7 @@ var dependencies = [
   'dropdownCheckbox',
   'slider',
   'heat-map-dynamic',
-  'heat-map',
-  'select2'
+  'heat-map'
 ];
 
 define(dependencies, function($, d3, properties, parseData, GraphGenerator, Spinner, dropdownCheckbox, Slider, dynamicHeatmap, heatmap, select2) {
@@ -60,24 +60,25 @@ define(dependencies, function($, d3, properties, parseData, GraphGenerator, Spin
   span = '<span class="caret"></span>';
 
   function fetchData() {
-    properties.data = parseData(properties.pubHash.getData({range:properties.range,mesh:properties.mesh}), properties);
+    var data = parseData(properties.pubHash.getData({range:properties.range,mesh:[]}), properties);
+    properties.data = data;
+    updateFilter('nodeSelect', data.nodes);
+    updateFilter('meshSelect', data.mesh);
   };
 
   function render() {
     var data = properties.data;
-
-
+    console.log(data);
     if (properties.graph) {
       // console.log('graph exists, updating....')
-      properties.graph.updateData(data);
+      // properties.graph.updateData(data);
     } else {
       // console.log('graph DNE, creating....')
 
       properties.graph = new GraphGenerator(data, properties);
-      properties.graph.propogateUpdate();
+      // properties.graph.propogateUpdate();
     }
-    // updateFilter('nodeFilter', data.nodes);
-    // updateFilter('meshTermFilter', data.mesh);
+    properties.graph.propogateUpdate();
   };
 
   function updatePerspective() {
@@ -136,13 +137,8 @@ define(dependencies, function($, d3, properties, parseData, GraphGenerator, Spin
   };
 
   function applyFilters() {
-    var mesh = properties.ui.meshSelect.select2('data');
-    // var nodeFilter = properties.ui.nodeFilter.dropdownCheckbox('checked');
-
-    // if any of a nodes mesh match any of the filter mesh it will be active
-    
-    });
-
+    properties.filter.mesh = properties.ui.meshSelect.select2('data');
+    properties.filter.node = properties.ui.nodeSelect.select2('data');
     render();
   };
 
@@ -236,34 +232,24 @@ define(dependencies, function($, d3, properties, parseData, GraphGenerator, Spin
 
 
   function updateFilter(filter, items) {
-    var newList = [],
-      persistent = [],
+    var list = [],
       count = 0;
-
-    properties.ui[filter].dropdownCheckbox('checked').forEach(function(item) {
-      persistent.push(item.label);
-    });
 
     items.forEach(function(item) {
       var label = (item.hasOwnProperty('data')) ? item.data.name : item;
-      if (persistent.indexOf(label) == -1) {
-        newList.push({id:count, label:label, text:label, isChecked:false});
-        count+=1;
-      }
-
+      list.push({id:count, text:label, isChecked:false});
+      count+=1;
     });
 
-    var arr = newList.concat(properties.ui[filter].dropdownCheckbox('checked')).sort(function(a, b) {
+    items = items.sort(function(a, b) {
       if(a.label < b.label) return -1;
       if(a.label > b.label) return 1;
       return 0;
     });
 
     properties.ui[filter].select2({
-      data: arr
+      data: list
     });
-
-    properties.ui[filter].dropdownCheckbox('reset', arr);
   };
 
   return function() {
@@ -285,16 +271,16 @@ define(dependencies, function($, d3, properties, parseData, GraphGenerator, Spin
         data:[]
       });
 
-      this.nodeFilter = $('#nodeFilter');
-      this.nodeFilter.select2({
+      this.nodeSelect = $('#nodeFilter');
+      this.nodeSelect.select2({
         multiple:true,
         data:[]
       });
 
-      this.meshTermFilter = $('.mesh-term-filter');
-      this.meshTermFilter.dropdownCheckbox(meshD);
-      this.nodeFilter = $('.node-filter');
-      this.nodeFilter.dropdownCheckbox(nodeD);
+      // this.meshTermFilter = $('.mesh-term-filter');
+      // this.meshTermFilter.dropdownCheckbox(meshD);
+      // this.nodeFilter = $('.node-filter');
+      // this.nodeFilter.dropdownCheckbox(nodeD);
       this.dateSlider = new Slider('#date-slider', {});
       this.dateSlider.setValue([2006,2006], true);
       this.dateSlider.on('slideStop', function(d) {

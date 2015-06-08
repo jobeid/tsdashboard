@@ -390,6 +390,7 @@ define(dependencies, function(d3) {
         return graph.heatFill(graph.valMap(d));
       })
       .attr('class', function(d) {
+        console.log(d.isActive(graph.properties.filter));
         if (d.active) {
           return 'node active';
         } else {
@@ -421,25 +422,6 @@ define(dependencies, function(d3) {
       }
       return 'M'+sX+','+sY+'A'+dr+','+dr+' 0 0,0 '+tX+','+tY;
     }
-  };
-
-  GraphGenerator.prototype.updateData = function(data) {
-    var graph = this;
-
-    // clean old data
-    graph.data.nodes.splice(0, graph.data.nodes.length);
-    graph.data.links.splice(0, graph.data.links.length);
-
-    // load new data
-    data.nodes.forEach(function(node) {
-      graph.data.nodes.push(node);
-    });
-    data.links.forEach(function(link) {
-      graph.data.links.push(link);
-    });
-
-    // call update
-    graph.propogateUpdate();
   };
 
   GraphGenerator.prototype.reSizeGraph = function(vis) {

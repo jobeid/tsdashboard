@@ -63,6 +63,7 @@ define(dependencies, function(d3, PubHash, deptData) {
     },
     mesh: [],
     nodeFilter: [],
+    filter: {mesh:[],node:[]},
     previous: {}
   };
 
