@@ -9,10 +9,11 @@
 
 var dependencies = [
   'author',
-  'publication'
+  'publication',
+  'dept-data'
 ];
 
-define(dependencies, function(Author, Publication) {
+define(dependencies, function(Author, Publication, deptData) {
 
   var PubHash = function(props) {
     this.props = props;
@@ -106,7 +107,7 @@ define(dependencies, function(Author, Publication) {
 
   PubHash.prototype.loadAuthors = function(author, pid) {
     if(!this.authors[author]) {
-      this.authors[author] = new Author(author, pid, this.props.deptData.getDeptName(pid));
+      this.authors[author] = new Author(author, pid, deptData.getDeptName(pid));
     }
   };
 

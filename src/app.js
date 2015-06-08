@@ -27,6 +27,7 @@ require(dependencies, function(queue, d3, ui) {
         console.log(error);
         callback(error, false);
       }
+      
       if(app.properties.pubHash.loadPublications(csv)) {
         callback(null, true);
       }

@@ -19,7 +19,7 @@ define(dependencies, function(d3) {
   function GraphGenerator(data, properties) {
 
     var graph = this;
-
+    console.log(properties);
     graph.data = data || {nodes:[],links:[]};
 
     graph.properties = properties;
@@ -319,7 +319,7 @@ define(dependencies, function(d3) {
           y1:graph.properties.previous[node.data.name].coors.y,
           x2:node.coors.x,
           y2:node.coors.y,
-          active:node.active
+          active:node.isActive(graph.properties.filter)
         });
       }
       newPrevious.push(node);
@@ -354,25 +354,25 @@ define(dependencies, function(d3) {
     // En + U
     graph.vertices
       .on('mouseover', function(d) {
-        if (d.active) {
-          //console.log(d);
-          var label = (d.data.name||d.data.pmid);
-          graph.tooltip.transition().duration(200).style('opacity', 0.8);
-          graph.tooltip.html('<h4>'+
-              label+
-              '</h4><h5>'+
-              d.pubCt+
-              ' total publications</h5><p>C: '+
-              (d.ts.C * 100).toFixed()+
-              '%</p><p>A: '+
-              (d.ts.A * 100).toFixed()+
-              '%</p><p>H: '+
-              (d.ts.H * 100).toFixed()+
-              '%</p>')
-            .attr('width', (label.length + 20)+'px')
-            .style('left', d3.event.pageX + 'px')
-            .style('top', (d3.event.pageY - 28) + 'px');
-        }
+
+        var label = '<h4>'+
+            d.data.name+
+            '</h4><h5>'+
+            d.pubCt+
+            ' total publications</h5><p>C: '+
+            (d.ts.C * 100).toFixed()+
+            '%</p><p>A: '+
+            (d.ts.A * 100).toFixed()+
+            '%</p><p>H: '+
+            (d.ts.H * 100).toFixed()+
+            '%</p>';
+
+        graph.tooltip.transition().duration(200).style('opacity', 0.8);
+
+        graph.tooltip.html(label)
+          .attr('width', (label.length + 20)+'px')
+          .style('left', d3.event.pageX + 'px')
+          .style('top', (d3.event.pageY - 28) + 'px');
 
       })
       .on('mouseout', function(d) {
@@ -390,12 +390,13 @@ define(dependencies, function(d3) {
         return graph.heatFill(graph.valMap(d));
       })
       .attr('class', function(d) {
-        console.log(d.isActive(graph.properties.filter));
-        if (d.active) {
+
+        if (d.isActive(graph.properties.filter)) {
           return 'node active';
         } else {
           return 'node inactive';
         }
+
       })
       .attr('transform', graph.transform);
 
@@ -422,6 +423,25 @@ define(dependencies, function(d3) {
       }
       return 'M'+sX+','+sY+'A'+dr+','+dr+' 0 0,0 '+tX+','+tY;
     }
+  };
+
+  GraphGenerator.prototype.updateData = function(data) {
+    var graph = this;
+
+    // clean old data
+    graph.data.nodes.splice(0, graph.data.nodes.length);
+    graph.data.links.splice(0, graph.data.links.length);
+
+    // load new data
+    data.nodes.forEach(function(node) {
+      graph.data.nodes.push(node);
+    });
+    data.links.forEach(function(link) {
+      graph.data.links.push(link);
+    });
+
+    // call update
+    graph.propogateUpdate();
   };
 
   GraphGenerator.prototype.reSizeGraph = function(vis) {

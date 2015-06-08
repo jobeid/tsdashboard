@@ -22,7 +22,7 @@ var dependencies = [
   'heat-map'
 ];
 
-define(dependencies, function($, d3, properties, parseData, GraphGenerator, Spinner, dropdownCheckbox, Slider, dynamicHeatmap, heatmap, select2) {
+define(dependencies, function($, d3, select2, properties, parseData, GraphGenerator, Spinner, dropdownCheckbox, Slider, dynamicHeatmap, heatmap) {
   var spinnerOpts = {
     lines: 13, // The number of lines to draw
     length: 20, // The length of each line
@@ -62,39 +62,37 @@ define(dependencies, function($, d3, properties, parseData, GraphGenerator, Spin
   function fetchData() {
     var data = parseData(properties.pubHash.getData({range:properties.range,mesh:[]}), properties);
     properties.data = data;
-    updateFilter('nodeSelect', data.nodes);
-    updateFilter('meshSelect', data.mesh);
+    console.log(data);
+    // updateFilter('nodeSelect', data.nodes);
+    // updateFilter('meshSelect', data.mesh);
   };
 
   function render() {
     var data = properties.data;
-    console.log(data);
-    if (properties.graph) {
-      // console.log('graph exists, updating....')
-      // properties.graph.updateData(data);
-    } else {
-      // console.log('graph DNE, creating....')
 
+    if (!properties.graph) {
       properties.graph = new GraphGenerator(data, properties);
-      // properties.graph.propogateUpdate();
+    } else {
+      properties.graph.updateData(data);
     }
+
     properties.graph.propogateUpdate();
   };
 
-  function updatePerspective() {
-    var current = d3.select('#btnNodePerspective').text().trim()
-    var next = d3.select(this).text().trim();
-    d3.select(this).text(current);
-    d3.select('#btnNodePerspective').html(next+span);
-    properties.mesh = [];
-    properties.ui.meshTermFilter.dropdownCheckbox('reset', []);
-    properties.nodeFilter = [];
-    properties.ui.nodeFilter.dropdownCheckbox('reset', []);
-    properties.previous = [];
-    properties[current] = false;
-    properties[next] = true;
-    render();
-  };
+  // function updatePerspective() {
+  //   var current = d3.select('#btnNodePerspective').text().trim()
+  //   var next = d3.select(this).text().trim();
+  //   d3.select(this).text(current);
+  //   d3.select('#btnNodePerspective').html(next+span);
+  //   properties.mesh = [];
+  //   properties.ui.meshTermFilter.dropdownCheckbox('reset', []);
+  //   properties.nodeFilter = [];
+  //   properties.ui.nodeFilter.dropdownCheckbox('reset', []);
+  //   properties.previous = [];
+  //   properties[current] = false;
+  //   properties[next] = true;
+  //   render();
+  // };
 
   function updateNodeSize() {
     var current = d3.select('#btnNodeSize').text().trim();
@@ -133,7 +131,8 @@ define(dependencies, function($, d3, properties, parseData, GraphGenerator, Spin
     properties.dhm.year = properties.range.lo;
     properties.dhm.propogateUpdate();
     properties.ui.dateSlider.setValue([properties.range.lo,properties.range.hi]);
-    properties.ui.render();
+    properties.ui.fetchData();
+    // properties.ui.render();  // super choppy and the node coors arent updating <----
   };
 
   function applyFilters() {
@@ -241,9 +240,19 @@ define(dependencies, function($, d3, properties, parseData, GraphGenerator, Spin
       count+=1;
     });
 
-    items = items.sort(function(a, b) {
-      if(a.label < b.label) return -1;
-      if(a.label > b.label) return 1;
+    list = list.sort(function(x, y) {
+      var a = x.text.split(' '), b = y.text.split(' ');
+
+      if (filter == 'nodeSelect') {
+        a = a[a.length-1];
+        b = b[b.length-1];
+      } else {
+        a = a[0];
+        b = b[0];
+      }
+
+      if(a < b) return -1;
+      if(a > b) return 1;
       return 0;
     });
 
@@ -267,20 +276,16 @@ define(dependencies, function($, d3, properties, parseData, GraphGenerator, Spin
 
       this.meshSelect = $('#meshTermFilter');
       this.meshSelect.select2({
-        multiple:true,
-        data:[]
-      });
+          multiple:true,
+          data:[]
+        });
 
       this.nodeSelect = $('#nodeFilter');
       this.nodeSelect.select2({
-        multiple:true,
-        data:[]
-      });
+          multiple:true,
+          data:[]
+        });
 
-      // this.meshTermFilter = $('.mesh-term-filter');
-      // this.meshTermFilter.dropdownCheckbox(meshD);
-      // this.nodeFilter = $('.node-filter');
-      // this.nodeFilter.dropdownCheckbox(nodeD);
       this.dateSlider = new Slider('#date-slider', {});
       this.dateSlider.setValue([2006,2006], true);
       this.dateSlider.on('slideStop', function(d) {
@@ -308,7 +313,7 @@ define(dependencies, function($, d3, properties, parseData, GraphGenerator, Spin
       // FILTER UPDATE
       d3.select('#btnApplyFilters').on('click', applyFilters);
       // PERSPECTIVE DD
-      d3.select('#nodePerspListOne').on('click', updatePerspective);
+      // d3.select('#nodePerspListOne').on('click', updatePerspective);
       // NODE SIZE DD
       d3.select('#nodeSizeListOne').on('click', updateNodeSize);
       d3.select('#nodeSizeListTwo').on('click', updateNodeSize);
@@ -335,6 +340,21 @@ define(dependencies, function($, d3, properties, parseData, GraphGenerator, Spin
       d3.select('#edgeColorListFive').on('click', updateEdgeColor);
 
       // TOGGLES
+      // node filter (author | dept)
+      d3.select('#tglNodeFilter').on('click', function() {
+        var tog = d3.select(this);
+
+        if (tog.text() == 'Department Filter') {
+          tog.text('Author Filter');
+        } else {
+          tog.text('Department Filter');
+        }
+
+        properties.filter.Department = !properties.filter.Department;
+        properties.graph.propogateUpdate();
+      });
+
+      // edges
       d3.select('#tglEdge').on('click', function() {
         var tog = d3.select(this);
         if (tog.text() == 'On') {
@@ -351,6 +371,7 @@ define(dependencies, function($, d3, properties, parseData, GraphGenerator, Spin
 
       });
 
+      // transition
       d3.select('#tglTransition').on('click', function() {
         var tog = d3.select(this);
 
@@ -364,6 +385,7 @@ define(dependencies, function($, d3, properties, parseData, GraphGenerator, Spin
         }
       });
 
+      // node trails
       d3.select('#tglTrails').on('click', function() {
         var tog = d3.select(this);
         if (tog.text() == 'On') {
@@ -376,9 +398,10 @@ define(dependencies, function($, d3, properties, parseData, GraphGenerator, Spin
           d3.selectAll('.trails.inactive').attr('class', 'trails active');
         }
       });
-    };
+    }; // end init()
+
     this.render = render;
-    this.updatePerspective = updatePerspective;
+    // this.updatePerspective = updatePerspective;
     this.transition = transition;
     this.updateFilter = updateFilter;
     this.renderHeatMap = renderHeatMap;

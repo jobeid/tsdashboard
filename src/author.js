@@ -23,7 +23,7 @@ define(function() {
       return true;
     };
 
-    this.intersectionOf(range) {
+    this.intersectionOf = function(range) {
       for (var i = range.lo; i<=range.hi; i++) {
         if (!this.yearsInAuthorship[i]) {
           return false;

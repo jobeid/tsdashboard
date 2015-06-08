@@ -46,6 +46,6 @@ define(files, function(deptData, personelData) {
       } else {
         return institutions[instID];
       }
-    };
+    }
   }
 });

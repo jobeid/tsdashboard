@@ -1,6 +1,7 @@
 /*
-*
-*
+* 6/8/2015
+* Tom Evans
+* node class for encapsulation of author data in d3 friendly node object.
 *
 */
 
@@ -12,7 +13,7 @@ var dependencies = [
   'tran-sci-cats'
 ];
 
-define(dependencies, function(ts) {
+define(dependencies, function(d3, vectorize, ts) {
   return function (auth) {
     this.data = auth;
     this.ts = new ts();
@@ -22,13 +23,17 @@ define(dependencies, function(ts) {
     this.coors = {x:0,y:0};
     this.pmids = [];
     this.mesh = [];
-    this.isActive = function (filter) {
-      var m = true, n = true, f = false;
+
+    this.isActive = function(filter) {
+      var m = true,
+        n = true,
+        f = false,
+        that = this;
 
       if (filter.mesh.length > 0) {
         // if at least one mesh term matches the filter
         filter.mesh.forEach(function(term) {
-          if (this.mesh.indexOf(term.text) != -1) {
+          if (that.mesh.indexOf(term.text) != -1) {
             f = true;
           }
         });
@@ -36,13 +41,17 @@ define(dependencies, function(ts) {
       }
       if (filter.node.length > 0) {
         n = filter.node.filter(function(d) {
-          return d.text == this.name;
-        }) == 1;
+
+          return (filter.Department) ?
+            d.text == that.data.dept : d.text == that.data.name;
+
+        }).length == 1;
       }
 
       return m && n;
     };
-    this.genCoordinates(maxRange) {
+
+    this.genCoordinates = function(maxRange) {
       var scale = d3.scale.linear()
         .domain([0,1])
         .range([0, maxRange]),
