@@ -36,6 +36,16 @@ define(files, function(deptData, personelData) {
   return {
     institutions:institutions,
     departments:departmentNames,
-    personel:personel
+    personel:personel,
+    getDeptName: function(pid) {
+      var instID = personel[pid].instID,
+        depID = personel[pid].deptID;
+
+      if (instID == 14) {
+        return departmentNames[depID];
+      } else {
+        return institutions[instID];
+      }
+    }
   }
 });

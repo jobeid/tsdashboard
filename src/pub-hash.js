@@ -8,26 +8,30 @@
 'use strict';
 
 var dependencies = [
+  'd3',
   'author',
-  'publication'
+  'publication',
+  'dept-data'
 ];
 
-define(dependencies, function(Author, Publication) {
+define(dependencies, function(d3, Author, Publication, deptData) {
 
-  var PubHash = function() {
+  var PubHash = function(props) {
+    this.props = props;
     this.publications = {};
     this.authors = {};
-    this.meshTrends = {
-      '2006':{},
-      '2007':{},
-      '2008':{},
-      '2009':{},
-      '2010':{},
-      '2011':{},
-      '2012':{},
-      '2013':{},
-      '2014':{}
+    this.yearLookup = {
+      '2006':[],
+      '2007':[],
+      '2008':[],
+      '2009':[],
+      '2010':[],
+      '2011':[],
+      '2012':[],
+      '2013':[],
+      '2014':[]
     };
+    this.completeMesh = [];
   }
 
   // Load the hashes...
@@ -48,10 +52,15 @@ define(dependencies, function(Author, Publication) {
         // create or update publication
         if (!this.publications[row.pmid]) {
           var temp = new Publication(row.pmid, year);
+
           temp.primeAuthor[row.author] = this.authors[row.author];
           temp.secAuthor[row.coauthor] = this.authors[row.coauthor];
+
           this.publications[row.pmid] = temp;
+          this.yearLookup[year].push(this.publications[row.pmid]);
+
         } else {
+
           if (!this.publications[row.pmid].primeAuthor[row.author]) {
             this.publications[row.pmid].primeAuthor[row.author] = this.authors[row.author];
             if(this.publications[row.pmid].secAuthor[row.author]) {
@@ -70,24 +79,22 @@ define(dependencies, function(Author, Publication) {
   PubHash.prototype.loadMesh = function(file) {
     for (var id in file) {
       var row = file[id];
+      var year = row.year.split('-')[0];
+
       if (row.hasOwnProperty('pmid')) {
         if (!this.publications[row.pmid]) {
-  				this.publications[row.pmid] = new Publication(row.pmid, row.year.split('-')[0]);
+  				this.publications[row.pmid] = new Publication(row.pmid, year);
+          this.yearLookup[year].push(this.publications[row.pmid]);
   			}
   			var pub = this.publications[row.pmid];
   			if (pub) {
   				if (pub.mesh.indexOf(row.mesh) == -1) {
   					pub.mesh.push(row.mesh);
+            this.completeMesh.push(row.mesh);
   				}
 
   				pub.meshNums.push({number:row.meshTreeNumber,term:pub.mesh.indexOf(row.mesh)});
   				var t = this.translateMeshNum(row.meshTreeNumber);
-
-          if (this.meshTrends[row.year.split('-')[0]][row.meshTreeNumber]) {
-            this.meshTrends[row.year.split('-')[0]][row.meshTreeNumber]++;
-          } else {
-            this.meshTrends[row.year.split('-')[0]][row.meshTreeNumber] = 1;
-          }
 
   				if (t != '?') {
   					pub.ts[t]++;
@@ -105,33 +112,20 @@ define(dependencies, function(Author, Publication) {
 
   PubHash.prototype.loadAuthors = function(author, pid) {
     if(!this.authors[author]) {
-      this.authors[author] = new Author(author, pid);
+      this.authors[author] = new Author(author, pid, deptData.getDeptName(pid));
     }
   };
 
-  PubHash.prototype.getData = function(filter) {
+  PubHash.prototype.getData = function(range) {
     var result = [];
 
-    // handle year filter FIRST
-		for (var pmid in this.publications) {
-			var pub = this.publications[pmid];
-			if (pub.year >= filter.range.lo && pub.year <= filter.range.hi) {
-				result.push(pub);
-			}
-		}
-		// result = publication that fit year filter
+    if (range.lo == range.hi) {
+      return this.yearLookup[range.lo];
+    }
 
-		// handle any mesh term matches SECOND
-		if (filter.mesh.length != 0) {
-			result = result.filter(function(d) {
-				for (var i = 0; i < filter.mesh.length; i++) {
-					if (d.mesh.indexOf(filter.mesh[i].label) != -1) {
-						return true;
-					}
-				}
-				return false;
-			});
-		}
+    for (var i=range.lo; i<=range.hi; i++) {
+      result = d3.merge([result, this.yearLookup[i]]);
+    }
 
 		return result;
   };

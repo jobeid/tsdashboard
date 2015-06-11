@@ -27,6 +27,7 @@ require(dependencies, function(queue, d3, ui) {
         console.log(error);
         callback(error, false);
       }
+      
       if(app.properties.pubHash.loadPublications(csv)) {
         callback(null, true);
       }
@@ -46,10 +47,9 @@ require(dependencies, function(queue, d3, ui) {
   };
 
   function initialize() {
-    //console.log(app.properties.pubHash);
     app.init();
+    app.fetchData();
     app.render();
-    console.log(app);
     finishLoad();
   }
 

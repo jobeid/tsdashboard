@@ -9,6 +9,8 @@
   <link rel="stylesheet" type="text/css" href="css/bootstrap-dropdown-checkbox.css">
   <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.0/css/bootstrap-toggle.min.css" rel="stylesheet">
   <link rel="stylesheet" type="text/css" href="css/bootstrap-slider.css">
+  <link href="./css/select2.min.css" rel="stylesheet" />
+
 <!--
   <meta name="viewport" content="width=device-width, initial-scale=0.65, maximum-scale=0.65">
 -->
@@ -21,16 +23,21 @@
           <div class="panel-heading text-center">
             <div class="container-fluid">
               <div class="row">
-                <div class="col-sm-4 col-md-2 col-lg-2">
-                  <img alt="BiRG" src="http://birg.cs.cofc.edu/images/Paul-labs-logo.png">
+                <div class="col-sm-5 col-md-3 col-lg-3">
+                  <!-- COFC BiRG LOGOS -->
+                  <img alt="COFC" src="./dat/img/cofc_logo_icon.jpg">
+
+                  <img alt="BiRG" src="./dat/img/Paul-labs.png">
                 </div>
-                <div class="col-sm-4 col-md-8 col-lg-8">
+                <div class="col-sm-4 col-md-7 col-lg-7">
                   <h1>Translational Science Dashboard</h1>
                   <h5>Biomedical Informatics Center - Medical University of South Carolina</h5>
                   <h5>Bioinformatics Research Group - College of Charleston</h5>
                 </div>
-                <div class="col-sm-4 col-md-2 col-lg-2">
+                <div class="col-sm-3 col-md-2 col-lg-2">
+                  <!-- MUSC BMIC LOGOS -->
                   <img alt="MUSC" src="./dat/img/musc_logo.gif">
+
                   <img alt="BMIC" src="./dat/img/BMIC_icon.png">
                 </div>
               </div>
@@ -44,7 +51,7 @@
                   <div class="row">
                     <div class="col-sm-12 col-md-12 col-lg-12">
                       <div class="panel panel-default">
-                        <div class="panel-body">
+                        <div class="panel-body vis" id="weber">
                           <!-- Weber Vis -->
                           <div class="chart"></div>
                         </div>
@@ -54,7 +61,7 @@
                   <div class="row">
                     <div class="col-sm-12 col-md-12 col-lg-12">
                       <div class="panel panel-default">
-                        <div class="panel-body">
+                        <div class="panel-body vis" id="dhm">
                           <!-- DHM Vis -->
                           <div class="dynamic-hm"></div>
                         </div>
@@ -78,11 +85,49 @@
 
                             <div class="row">
                               <!-- FILTER DROPDOWNS -->
-                              <div class="col-md-6 col-lg-6">
-                                <div class="mesh-term-filter"></div>
+                              <div class="col-md-12 col-lg-12">
+
+                                <div class="container-fluid">
+
+                                  <div class="row">
+                                    <div class="col-md-12 col-lg-12">
+                                      <h5>Mesh Term Filter</h5>
+                                    </div>
+                                  </div>
+
+                                  <div class="row">
+                                      <div class="col-md-12 col-lg-12">
+                                        <select id="meshTermFilter" class="filter-select"></select>
+                                      </div>
+                                  </div>
+
+                                </div>
+
                               </div>
-                              <div class="col-md-6 col-lg-6">
-                                <div class="node-filter"></div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                              <div class="col-md-12 col-lg-12">
+
+                                <div class="container-fluid">
+
+                                  <div class="row">
+                                    <div class="col-md-12 col-lg-12">
+                                      <!--<button id="tglNodeFilter" type="button" class="btn btn-default" data-toggle="button">
+                                        Department Filter
+                                      </button>-->
+                                      <h5>Department Filter</h5>
+                                    </div>
+                                  </div>
+
+                                  <div class="row">
+                                    <div class="col-md-12 col-lg-12">
+                                      <select id="nodeFilter" class="filter-select"></select>
+                                    </div>
+                                  </div>
+
+                                </div>
+
                               </div>
                             </div>
                             <hr>
@@ -110,13 +155,19 @@
                             <div class="container-fluid">
                               <div class="row">
                                 <div class="col-md-6 col-lg-6">
-                                  <p>Nodes As: </p>
+                                  <p>Node Color: </p>
                                   <div class="btn-group">
-                                      <button id="btnNodePerspective" type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-expand="false">
-                                      Authors<span class="caret"></span>
+                                      <button id="btnNodeColor" type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-expand="false">
+                                      Trans Science<span class="caret"></span>
                                       </button>
                                       <ul class="dropdown-menu" role="menu">
-                                          <li><a href="#" id="nodePerspListOne">Departments</a></li>
+                                          <li><a href="#" id="nodeColorListOne">Degree</a></li>
+                                          <li><a href="#" id="nodeColorListTwo">In Degree</a></li>
+                                          <li><a href="#" id="nodeColorListThree">Out Degree</a></li>
+                                          <li><a href="#" id="nodeColorListFour">Animal</a></li>
+                                          <li><a href="#" id="nodeColorListFive">Human</a></li>
+                                          <li><a href="#" id="nodeColorListSix">Cell</a></li>
+                                          <li><a href="#" id="nodeColorListSeven">Publication Count</a></li>
                                       </ul>
                                   </div>
                                 </div>
@@ -140,24 +191,7 @@
                               </div>
                               <hr>
                               <div class="row">
-                                <div class="col-md-6 col-lg-6">
-                                  <p>Node Color: </p>
-                                  <div class="btn-group">
-                                      <button id="btnNodeColor" type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-expand="false">
-                                      Trans Science<span class="caret"></span>
-                                      </button>
-                                      <ul class="dropdown-menu" role="menu">
-                                          <li><a href="#" id="nodeColorListOne">Degree</a></li>
-                                          <li><a href="#" id="nodeColorListTwo">In Degree</a></li>
-                                          <li><a href="#" id="nodeColorListThree">Out Degree</a></li>
-                                          <li><a href="#" id="nodeColorListFour">Animal</a></li>
-                                          <li><a href="#" id="nodeColorListFive">Human</a></li>
-                                          <li><a href="#" id="nodeColorListSix">Cell</a></li>
-                                          <li><a href="#" id="nodeColorListSeven">Publication Count</a></li>
-                                      </ul>
-                                  </div>
-                                </div>
-                                <div class="col-md-6 col-lg-6">
+                                <div class="col-md-12 col-lg-12">
                                   <p>Node Trails </p>
                                   <button id="tglTrails" type="button" class="btn btn-default" data-toggle="button">Off</button>
                                 </div>
@@ -182,7 +216,7 @@
 
                             <div class="container-fluid">
                               <div class="row">
-                                <div class="col-md-6 col-lg-6">
+                                <div class="col-md-12 col-lg-12">
                                   <p>Edge Color: </p>
                                   <div class="btn-group">
                                       <button id="btnEdgeColor" type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-expand="false">
@@ -201,7 +235,7 @@
                               </div>
                               <hr>
                               <div class="row">
-                                <div class="col-md-6 col-lg-6">
+                                <div class="col-md-12 col-lg-12">
                                   <p>Show Edges </p>
                                   <button id="tglEdge" type="button" class="btn btn-default" data-toggle="button">Off</button>
                                 </div>
@@ -292,8 +326,8 @@
               <div class="row">
                 <div class="col-sm-12 col-md-12 col-lg-12">
                   <p>
-                    The translational science dashboard has been an evolving project since January of this year.  This project
-                    has developed under the direction of the Biomedical Informatics Center at the Medical University of South
+                    The translational science dashboard has been an evolving project since January of 2015.  The project
+                    has been developed under the direction of the Biomedical Informatics Center at the Medical University of South
                     Carolina, with the cooperation of the Bioinformatics Research Group at College of Charleston.
                   </p>
                   <h3 class="text-center"><b>The Method</b></h3>
@@ -322,23 +356,23 @@ FILTER ( ( ?year> "2006-01-01T00:00:00Z") &&( ?year< "2006-12-31T00:00:00Z") )
                   </code></pre>
                   <br>
                   <p>
-                  The primary visualization utilizes a tertiary plot and a slight variation of <a href="./dat/pdf/Weber.pdf"><i>Weber's</i></a> method of mapping publications to
+                  The primary visualization utilizes a tertiary plot and a slight variation of <a href="./dat/pdf/Weber.pdf" target="_blank"><i>Weber's</i></a> method of mapping publications to
                   three general areas of research: <strong>H</strong>uman, <strong>A</strong>nimal and complex organisms, or <strong>C</strong>ells and molecules.
-                  By examining the sub MeSH tree numbers of the MeSh terms associated with a given publication, MeSH terms are grouped into one of these three categories.
-                  Following Weber's mapping scheme A is mapped to all sub MeSH numbers under the Eukaryota (B01) subtree, with exception of the human sub MeSH number
-                  B01.050.150.900.649.801.400.112.400.400 which is mapped to H.  In addition the subtree Person (M01) is also mapped to H.  C is mapped to Cells (A11), Archaea (B02),
-                   Bacteria (B03), Viruses (B04), Molecular Structures (G02.111.570), and Chemical Processes (G02.149).  In addition to Weber's mapping scheme, we have added all sub
-                  MeSH numbers under the Disease (C) tree.
+                  By examining the sub MeSH tree numbers of the MeSH terms associated with a given publication, MeSH terms are grouped into one of these three categories.
+                  Following Weber's mapping scheme A is mapped to all sub MeSH numbers under the Eukaryota (<a href="https://www.nlm.nih.gov/cgi/mesh/2015/MB_cgi?mode=dcms&term=Eukaryota&field=entry#TreeB01" target="_blank">B01</a>) subtree, with exception of the human sub MeSH number
+                  <a href="https://www.nlm.nih.gov/cgi/mesh/2015/MB_cgi?mode=dcms&term=Humans&field=entry#TreeB01.050.150.900.649.801.400.112.400.400" target="_blank">B01.050.150.900.649.801.400.112.400.400</a> which is mapped to H.  In addition the subtree Person (<a href="https://www.nlm.nih.gov/cgi/mesh/2015/MB_cgi?mode=dcms&term=Persons&field=entry#TreeM01" target="_blank">M01</a>) is also mapped to H.  C is mapped to Cells (<a href="https://www.nlm.nih.gov/cgi/mesh/2015/MB_cgi?mode=dcms&term=Body+Regions&field=entry#TreeA01" target="_blank">A11</a>), Archaea (<a href="https://www.nlm.nih.gov/cgi/mesh/2015/MB_cgi?mode=dcms&term=Archaea&field=entry#TreeB02" target="_blank">B02</a>),
+                   Bacteria (<a href="https://www.nlm.nih.gov/cgi/mesh/2015/MB_cgi?mode=dcms&term=Bacteria&field=entry#TreeB03" target="_blank">B03</a>), Viruses (<a href="https://www.nlm.nih.gov/cgi/mesh/2015/MB_cgi?mode=dcms&term=Viruses&field=entry#TreeB04" target="_blank">B04</a>), Molecular Structures (<a href="https://www.nlm.nih.gov/cgi/mesh/2015/MB_cgi?mode=dcms&term=Molecular+Structure&field=entry#TreeG02.111.570" target="_blank">G02.111.570</a>), and Chemical Processes (<a href="https://www.nlm.nih.gov/cgi/mesh/2015/MB_cgi?mode=dcms&term=Chemical+Processes&field=entry#TreeG02.149" target="_blank">G02.149</a>).  In addition to Weber's mapping scheme, we have added all sub
+                  MeSH numbers under the Disease (<a href="https://www.nlm.nih.gov/mesh/2015/mesh_browser/DCMS/MeSHtree.C.html#link_id" target="_blank">C</a>) tree.
                   </p>
                   <p>
                   As we processed publications we treated the identifiable MeSH, those that could be codified by our mapping, as proportions based on the total MeSH terms cited for the
-                  given publication.  The publications are then grouped by author, represented by nodes in the tertiary plot above.  The aggregated values, now
-                  representative of what percentage of the author's work falls into the given category.  By treating each value as the magnitude of a vector from the tertiary's centroid,
-                  to the category the value represents.  Once the vectors of the node are computed the vector sum is taken, resulting in the coordinates of the node.
+                  given publication.  The publications are then grouped by author, represented by nodes in the tertiary plot above.  These aggregated values are
+                  representative of what percentage of the author's work falls into the given category.  By treating each value as the magnitude of a vector from the tertiary's centroid
+                  to the category the value represents, a vector is calculated for each category.  Once the vectors of the node are computed the vector sum is taken, resulting in the coordinates of the node in the tertiary plot.
                   </p>
                   <p>
-                  By taking a cohort based on the population of nodes within discrete regions of the tertiary plot, the specific research trends of the cohort can be viewed over over time.
-                  By default we focus on a cohort of those authors in the two regions of the tertiary plot further from human research.  As cell and animal research can be considered basic
+                  By taking a cohort based on the population of nodes within discrete regions of the tertiary plot, the specific research trends of the cohort can be viewed over time.
+                  By default we focus on a cohort of those authors in the two regions of the tertiary plot furthest from the human research category.  As cell and animal research can be considered basic
                   science, we can follow the movement of the cohort population and see if they gravitate towards more translational research over time.  It can be seen that for this specific
                   cohort there is indeed a diaspora in the direction of human research.
                   </p>

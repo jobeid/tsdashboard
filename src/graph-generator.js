@@ -215,29 +215,27 @@ define(dependencies, function(d3) {
   GraphGenerator.prototype.propogateUpdate = function() {
     var graph = this;
 
-    console.log(graph.data);
-
-    graph.eigenScale = d3.scale.linear().domain(
-        d3.extent(graph.data.nodes, function(d){ return d.eigen; })
-      )
-      .range([20,100]).clamp(true);
+    // graph.eigenScale = d3.scale.linear().domain(
+    //     d3.extent(graph.data.nodes, function(d){ return d.eigen; })
+    //   )
+    //   .range([20,100]).clamp(true);
 
     // reset all scale domains
-    graph.heatFill.domain(d3.extent(graph.data.nodes, function(d) {
+    var val = d3.extent(graph.data.nodes, function(d) {
       return graph.valMap(d);
-    }));
+    });
 
-    graph.radiusScale.domain(d3.extent(graph.data.nodes, function(d) {
-      return graph.valMap(d);
-    }));
+    graph.heatFill.domain(val);
 
-    graph.edgeColorScale.domain(d3.extent(graph.data.links, function(d) {
+    graph.radiusScale.domain(val);
+
+    val = d3.extent(graph.data.links, function(d) {
       return graph.edgeValMap(d);
-    }));
+    });
 
-    graph.edgeWidthScale.domain(d3.extent(graph.data.links, function(d) {
-      return graph.edgeValMap(d);
-    }));
+    graph.edgeColorScale.domain(val);
+
+    graph.edgeWidthScale.domain(val);
 
     // UPDATE TITLE
     graph.title.text(function() {
@@ -319,7 +317,7 @@ define(dependencies, function(d3) {
           y1:graph.properties.previous[node.data.name].coors.y,
           x2:node.coors.x,
           y2:node.coors.y,
-          active:node.active
+          active:node.isActive(graph.properties.filter)
         });
       }
       newPrevious.push(node);
@@ -354,32 +352,32 @@ define(dependencies, function(d3) {
     // En + U
     graph.vertices
       .on('mouseover', function(d) {
-        if (d.active) {
-          //console.log(d);
-          var label = (d.data.name||d.data.pmid);
-          graph.tooltip.transition().duration(200).style('opacity', 0.8);
-          graph.tooltip.html('<h4>'+
-              label+
-              '</h4><h5>'+
-              d.pubCt+
-              ' total publications</h5><p>C: '+
-              (d.ts.C * 100).toFixed()+
-              '%</p><p>A: '+
-              (d.ts.A * 100).toFixed()+
-              '%</p><p>H: '+
-              (d.ts.H * 100).toFixed()+
-              '%</p>')
-            .attr('width', (label.length + 20)+'px')
-            .style('left', d3.event.pageX + 'px')
-            .style('top', (d3.event.pageY - 28) + 'px');
-        }
+
+        var label = '<h4>'+
+            d.data.name+
+            '</h4><h5>'+
+            d.pubCt+
+            ' total publications</h5><p>C: '+
+            (d.ts.C * 100).toFixed()+
+            '%</p><p>A: '+
+            (d.ts.A * 100).toFixed()+
+            '%</p><p>H: '+
+            (d.ts.H * 100).toFixed()+
+            '%</p>';
+
+        graph.tooltip.transition().duration(200).style('opacity', 0.8);
+
+        graph.tooltip.html(label)
+          .attr('width', (label.length + 20)+'px')
+          .style('left', d3.event.pageX + 'px')
+          .style('top', (d3.event.pageY - 28) + 'px');
 
       })
       .on('mouseout', function(d) {
         graph.tooltip.transition().duration(300).style('opacity', 0);
       })
       .transition()
-      .duration(1000)
+      .duration(1500)
       .attr('r', function(d) {
         return graph.radiusScale(graph.valMap(d));
       })
@@ -390,19 +388,19 @@ define(dependencies, function(d3) {
         return graph.heatFill(graph.valMap(d));
       })
       .attr('class', function(d) {
-        if (d.active) {
+        
+        if (d.isActive(graph.properties.filter)) {
           return 'node active';
         } else {
           return 'node inactive';
         }
+
       })
       .attr('transform', graph.transform);
 
 
     // // remove old
     graph.vertices.exit().transition().remove();
-
-    return true;
 
     function getArcSpecs(d) {
       var sX = d.source.coors.x,
@@ -438,8 +436,6 @@ define(dependencies, function(d3) {
       graph.data.links.push(link);
     });
 
-    // call update
-    graph.propogateUpdate();
   };
 
   GraphGenerator.prototype.reSizeGraph = function(vis) {

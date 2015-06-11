@@ -18,6 +18,7 @@ require.config({
     'spinner': '../lib/modules/spin.min',
     'slider': '../lib/modules/bootstrap-slider',
     'dropdownCheckbox': '../lib/modules/bootstrap-dropdown-checkbox.min',
+    'select2': '../lib/modules/select2.min',
     'app': 'app'
   },
   deps: ['app']

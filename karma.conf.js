@@ -15,6 +15,7 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
+      'src/require-config.js',
       {pattern: 'dat/musc_json/*.json', included: false},
       {pattern: 'lib/modules/*.js', included: false},
       {pattern: 'lib/modules/*.min.js', included: false},
