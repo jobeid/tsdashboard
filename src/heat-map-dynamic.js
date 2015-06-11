@@ -18,7 +18,7 @@ define(dependencies, function(d3) {
     graph.data = {};
     graph.year = properties.range.lo;
     graph.props = {
-      side:d3.select('.weber')[0][0].clientWidth,
+      side:properties.width,
       buffer: 0,
       n: 7,  // this needs to be dynamically set!
       q: Math.sqrt(Math.pow((0-260),2)+Math.pow((-300-150),2))

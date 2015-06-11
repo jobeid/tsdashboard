@@ -19,7 +19,7 @@ define(dependencies, function(d3) {
   function GraphGenerator(data, properties) {
 
     var graph = this;
-    console.log(properties);
+
     graph.data = data || {nodes:[],links:[]};
 
     graph.properties = properties;
@@ -215,29 +215,27 @@ define(dependencies, function(d3) {
   GraphGenerator.prototype.propogateUpdate = function() {
     var graph = this;
 
-    console.log(graph.data);
-
-    graph.eigenScale = d3.scale.linear().domain(
-        d3.extent(graph.data.nodes, function(d){ return d.eigen; })
-      )
-      .range([20,100]).clamp(true);
+    // graph.eigenScale = d3.scale.linear().domain(
+    //     d3.extent(graph.data.nodes, function(d){ return d.eigen; })
+    //   )
+    //   .range([20,100]).clamp(true);
 
     // reset all scale domains
-    graph.heatFill.domain(d3.extent(graph.data.nodes, function(d) {
+    var val = d3.extent(graph.data.nodes, function(d) {
       return graph.valMap(d);
-    }));
+    });
 
-    graph.radiusScale.domain(d3.extent(graph.data.nodes, function(d) {
-      return graph.valMap(d);
-    }));
+    graph.heatFill.domain(val);
 
-    graph.edgeColorScale.domain(d3.extent(graph.data.links, function(d) {
+    graph.radiusScale.domain(val);
+
+    val = d3.extent(graph.data.links, function(d) {
       return graph.edgeValMap(d);
-    }));
+    });
 
-    graph.edgeWidthScale.domain(d3.extent(graph.data.links, function(d) {
-      return graph.edgeValMap(d);
-    }));
+    graph.edgeColorScale.domain(val);
+
+    graph.edgeWidthScale.domain(val);
 
     // UPDATE TITLE
     graph.title.text(function() {
@@ -379,7 +377,7 @@ define(dependencies, function(d3) {
         graph.tooltip.transition().duration(300).style('opacity', 0);
       })
       .transition()
-      .duration(1000)
+      .duration(1500)
       .attr('r', function(d) {
         return graph.radiusScale(graph.valMap(d));
       })
@@ -390,7 +388,7 @@ define(dependencies, function(d3) {
         return graph.heatFill(graph.valMap(d));
       })
       .attr('class', function(d) {
-
+        
         if (d.isActive(graph.properties.filter)) {
           return 'node active';
         } else {
@@ -403,8 +401,6 @@ define(dependencies, function(d3) {
 
     // // remove old
     graph.vertices.exit().transition().remove();
-
-    return true;
 
     function getArcSpecs(d) {
       var sX = d.source.coors.x,
@@ -440,8 +436,6 @@ define(dependencies, function(d3) {
       graph.data.links.push(link);
     });
 
-    // call update
-    graph.propogateUpdate();
   };
 
   GraphGenerator.prototype.reSizeGraph = function(vis) {

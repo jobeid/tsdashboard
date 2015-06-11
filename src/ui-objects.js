@@ -60,11 +60,9 @@ define(dependencies, function($, d3, select2, properties, parseData, GraphGenera
   span = '<span class="caret"></span>';
 
   function fetchData() {
-    var data = parseData(properties.pubHash.getData({range:properties.range,mesh:[]}), properties);
+    var raw = properties.pubHash.getData(properties.range);
+    var data = parseData(raw, properties);
     properties.data = data;
-    console.log(data);
-    // updateFilter('nodeSelect', data.nodes);
-    // updateFilter('meshSelect', data.mesh);
   };
 
   function render() {
@@ -77,22 +75,12 @@ define(dependencies, function($, d3, select2, properties, parseData, GraphGenera
     }
 
     properties.graph.propogateUpdate();
-  };
 
-  // function updatePerspective() {
-  //   var current = d3.select('#btnNodePerspective').text().trim()
-  //   var next = d3.select(this).text().trim();
-  //   d3.select(this).text(current);
-  //   d3.select('#btnNodePerspective').html(next+span);
-  //   properties.mesh = [];
-  //   properties.ui.meshTermFilter.dropdownCheckbox('reset', []);
-  //   properties.nodeFilter = [];
-  //   properties.ui.nodeFilter.dropdownCheckbox('reset', []);
-  //   properties.previous = [];
-  //   properties[current] = false;
-  //   properties[next] = true;
-  //   render();
-  // };
+    if (properties.ui.spinOne) {
+      properties.ui.spinOne.stop();
+      properties.ui.spinOne = null;
+    }
+  };
 
   function updateNodeSize() {
     var current = d3.select('#btnNodeSize').text().trim();
@@ -132,13 +120,13 @@ define(dependencies, function($, d3, select2, properties, parseData, GraphGenera
     properties.dhm.propogateUpdate();
     properties.ui.dateSlider.setValue([properties.range.lo,properties.range.hi]);
     properties.ui.fetchData();
-    // properties.ui.render();  // super choppy and the node coors arent updating <----
+    properties.ui.render();
   };
 
   function applyFilters() {
     properties.filter.mesh = properties.ui.meshSelect.select2('data');
     properties.filter.node = properties.ui.nodeSelect.select2('data');
-    render();
+    properties.graph.propogateUpdate();
   };
 
   function renderHeatMap() {
@@ -146,8 +134,7 @@ define(dependencies, function($, d3, select2, properties, parseData, GraphGenera
       cohort = {'2006':[]},
       densities = {},
       dat = [],
-      raw = parseData(properties.pubHash.getData({range:{lo:2006,hi:2006},
-        mesh:properties.mesh}), properties).nodes;
+      raw = parseData(properties.pubHash.getData({lo:2006,hi:2006}), properties).nodes;
 
     var lines = [
         function(x) { return -1.52*x-225; },
@@ -183,7 +170,7 @@ define(dependencies, function($, d3, select2, properties, parseData, GraphGenera
     });
 
     for (var i=2007; i<2014; i++) {
-      raw = parseData(properties.pubHash.getData({range:{lo:i,hi:i},mesh:properties.mesh}), properties).nodes;
+      raw = parseData(properties.pubHash.getData({lo:i,hi:i}), properties).nodes;
       cohort[i] = [];
       raw.forEach(function(node) {
         if (pids.indexOf(node.data.pid) != -1) {
@@ -217,6 +204,10 @@ define(dependencies, function($, d3, select2, properties, parseData, GraphGenera
     this.properties.dhm.updateData(dat.slice(0,dat.length-1));
     this.properties.shm.updateData(dat);
 
+    if (this.spinTwo) {
+      this.spinTwo.stop();
+      this.spinTwo = null;
+    }
 
     function calcZone(coors) {
 
@@ -229,35 +220,13 @@ define(dependencies, function($, d3, select2, properties, parseData, GraphGenera
     };
   };
 
-
-  function updateFilter(filter, items) {
-    var list = [],
-      count = 0;
-
-    items.forEach(function(item) {
-      var label = (item.hasOwnProperty('data')) ? item.data.name : item;
-      list.push({id:count, text:label, isChecked:false});
-      count+=1;
+  function updateNodeSelect() {
+    var names = properties.data.nodes.map(function(d) {
+      return d.data.name;
     });
 
-    list = list.sort(function(x, y) {
-      var a = x.text.split(' '), b = y.text.split(' ');
-
-      if (filter == 'nodeSelect') {
-        a = a[a.length-1];
-        b = b[b.length-1];
-      } else {
-        a = a[0];
-        b = b[0];
-      }
-
-      if(a < b) return -1;
-      if(a > b) return 1;
-      return 0;
-    });
-
-    properties.ui[filter].select2({
-      data: list
+    properties.ui.nodeSelect.select2({
+      data: names
     });
   };
 
@@ -267,8 +236,8 @@ define(dependencies, function($, d3, select2, properties, parseData, GraphGenera
     this.meshTermFilter = null;
     this.nodeFilter = null;
     this.dateSlider = null;
-
-
+    this.spinOne = new Spinner(spinnerOpts).spin(document.getElementById('weber'));
+    this.spinTwo = new Spinner(spinnerOpts).spin(document.getElementById('dhm'));
 
     this.init = function() {
       properties.ui = this;
@@ -277,13 +246,18 @@ define(dependencies, function($, d3, select2, properties, parseData, GraphGenera
       this.meshSelect = $('#meshTermFilter');
       this.meshSelect.select2({
           multiple:true,
-          data:[]
+          data:d3.set(properties.pubHash.completeMesh).values()
         });
 
       this.nodeSelect = $('#nodeFilter');
       this.nodeSelect.select2({
           multiple:true,
-          data:[]
+          data:d3.set(d3.merge([
+            d3.map(properties.deptData.departments).values().sort(),
+            d3.map(properties.deptData.institutions).values().filter(function(d) {
+              return d != 'Medical University of South Carolina';
+            })
+          ])).values().sort()
         });
 
       this.dateSlider = new Slider('#date-slider', {});
@@ -340,19 +314,6 @@ define(dependencies, function($, d3, select2, properties, parseData, GraphGenera
       d3.select('#edgeColorListFive').on('click', updateEdgeColor);
 
       // TOGGLES
-      // node filter (author | dept)
-      d3.select('#tglNodeFilter').on('click', function() {
-        var tog = d3.select(this);
-
-        if (tog.text() == 'Department Filter') {
-          tog.text('Author Filter');
-        } else {
-          tog.text('Department Filter');
-        }
-
-        properties.filter.Department = !properties.filter.Department;
-        properties.graph.propogateUpdate();
-      });
 
       // edges
       d3.select('#tglEdge').on('click', function() {
@@ -360,13 +321,11 @@ define(dependencies, function($, d3, select2, properties, parseData, GraphGenera
         if (tog.text() == 'On') {
           tog.attr('class', 'btn btn-default').text('Off');
           properties.showEdges = false;
-          d3.selectAll('.link.active.nodesActive')
-            .attr('class', 'link inactive nodesActive');
+          properties.graph.propogateUpdate();
         } else {
           tog.attr('class', 'btn btn-info').text('On');
           properties.showEdges = true;
-          d3.selectAll('.link.inactive.nodesActive')
-            .attr('class','link active nodesActive');
+          properties.graph.propogateUpdate();
         }
 
       });
@@ -381,7 +340,7 @@ define(dependencies, function($, d3, select2, properties, parseData, GraphGenera
           properties.interval = null;
         } else {
           tog.attr('class', 'btn btn-info').text('On');
-          properties.interval = setInterval(transition, 2500);
+          properties.interval = setInterval(transition, 5000);
         }
       });
 
@@ -401,9 +360,8 @@ define(dependencies, function($, d3, select2, properties, parseData, GraphGenera
     }; // end init()
 
     this.render = render;
-    // this.updatePerspective = updatePerspective;
     this.transition = transition;
-    this.updateFilter = updateFilter;
+    this.updateNodeSelect = updateNodeSelect;
     this.renderHeatMap = renderHeatMap;
     this.fetchData = fetchData;
   }

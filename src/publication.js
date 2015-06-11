@@ -5,6 +5,7 @@
 */
 
 'use strict';
+
 define(['tran-sci-cats'], function(transci) {
   return function(pmid, year) {
 		this.pmid = pmid,
@@ -15,4 +16,4 @@ define(['tran-sci-cats'], function(transci) {
 		this.primeAuthor = {},
 		this.secAuthor = {};
   }
-})
+});

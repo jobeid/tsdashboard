@@ -5,6 +5,10 @@ html {
 body, div, svg {
   font-family: Roboto Slab; }
 
+.vis {
+  width: 600px;
+  height: 600px; }
+
 .filter-select {
   width: 95%; }
 

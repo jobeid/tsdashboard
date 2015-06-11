@@ -42,8 +42,7 @@ define(dependencies, function(d3, vectorize, ts) {
       if (filter.node.length > 0) {
         n = filter.node.filter(function(d) {
 
-          return (filter.Department) ?
-            d.text == that.data.dept : d.text == that.data.name;
+          return d.text == that.data.dept;
 
         }).length == 1;
       }
