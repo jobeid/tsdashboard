@@ -230,6 +230,26 @@ define(dependencies, function($, d3, select2, properties, parseData, GraphGenera
     });
   };
 
+  function updateMeshSelect() {
+    var mesh = d3.set(properties.pubHash.completeMesh).values().sort(function(a, b) {
+      var x = a.split(' '), y = b.split(' ');
+      x = x[0];
+      y = y[0];
+
+      if (x > y) {
+        return 1;
+      }
+      if (x < y) {
+        return -1;
+      }
+
+    });
+
+    properties.ui.meshSelect.select2({
+      data: mesh
+    });
+  };
+
   return function() {
     this.properties = properties;
     this.spinner = null;
@@ -362,6 +382,7 @@ define(dependencies, function($, d3, select2, properties, parseData, GraphGenera
     this.render = render;
     this.transition = transition;
     this.updateNodeSelect = updateNodeSelect;
+    this.updateMeshSelect = updateMeshSelect;
     this.renderHeatMap = renderHeatMap;
     this.fetchData = fetchData;
   }

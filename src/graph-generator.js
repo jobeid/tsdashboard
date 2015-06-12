@@ -189,6 +189,8 @@ define(dependencies, function(d3) {
       .attr('y', -250)
       .text('Title');
 
+    graph.setScales();
+
     function zoom() {
       d3.selectAll('.overlay')
         .attr('transform',
@@ -205,37 +207,15 @@ define(dependencies, function(d3) {
         'translate(' + d3.event.translate + ')scale(' + d3.event.scale + ')');
     };
 
-    // window.onresize = function() {
-    //   graph.reSizeGraph(graph.vis);
-    // }
+    window.onresize = function() {
+      graph.reSizeGraph(graph.vis);
+    }
   }; // END OBJECT CONSTRUCTOR
 
 
 
   GraphGenerator.prototype.propogateUpdate = function() {
     var graph = this;
-
-    // graph.eigenScale = d3.scale.linear().domain(
-    //     d3.extent(graph.data.nodes, function(d){ return d.eigen; })
-    //   )
-    //   .range([20,100]).clamp(true);
-
-    // reset all scale domains
-    var val = d3.extent(graph.data.nodes, function(d) {
-      return graph.valMap(d);
-    });
-
-    graph.heatFill.domain(val);
-
-    graph.radiusScale.domain(val);
-
-    val = d3.extent(graph.data.links, function(d) {
-      return graph.edgeValMap(d);
-    });
-
-    graph.edgeColorScale.domain(val);
-
-    graph.edgeWidthScale.domain(val);
 
     // UPDATE TITLE
     graph.title.text(function() {
@@ -246,14 +226,13 @@ define(dependencies, function(d3) {
       }
     });
 
-
-    // // // EDGES
+    // EDGES
     graph.edges = graph.edges.data(graph.data.links);
-    // // En
+    // En
     graph.edges.enter()
       .append('path');
 
-    // // En + U
+    // En + U
     graph.edges
       .on('mouseover', function(d) {
         var label = '<p>Source: ' + d.source.data.name
@@ -280,7 +259,9 @@ define(dependencies, function(d3) {
           classString += 'inactive ';
         }
 
-        if (d.source.active && d.target.active) {
+        if (d.source.isActive(graph.properties.filter)
+            && d.target.isActive(graph.properties.filter)) {
+              
           classString += 'nodesActive';
         }
         return classString;
@@ -388,7 +369,7 @@ define(dependencies, function(d3) {
         return graph.heatFill(graph.valMap(d));
       })
       .attr('class', function(d) {
-        
+
         if (d.isActive(graph.properties.filter)) {
           return 'node active';
         } else {
@@ -436,6 +417,28 @@ define(dependencies, function(d3) {
       graph.data.links.push(link);
     });
 
+    graph.setScales();
+  };
+
+  GraphGenerator.prototype.setScales = function () {
+    var graph = this;
+
+    // reset all scale domains
+    var val = d3.extent(graph.data.nodes, function(d) {
+      return graph.valMap(d);
+    });
+
+    graph.heatFill.domain(val);
+
+    graph.radiusScale.domain(val);
+
+    val = d3.extent(graph.data.links, function(d) {
+      return graph.edgeValMap(d);
+    });
+
+    graph.edgeColorScale.domain(val);
+
+    graph.edgeWidthScale.domain(val);
   };
 
   GraphGenerator.prototype.reSizeGraph = function(vis) {

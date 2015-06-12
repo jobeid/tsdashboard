@@ -27,7 +27,7 @@ require(dependencies, function(queue, d3, ui) {
         console.log(error);
         callback(error, false);
       }
-      
+
       if(app.properties.pubHash.loadPublications(csv)) {
         callback(null, true);
       }
@@ -82,6 +82,7 @@ require(dependencies, function(queue, d3, ui) {
     function reportFinal() {
       console.log('Queue has loaded all mesh files, file loading complete...');
       //app.calcTrendData(app.showTrends);
+      app.updateMeshSelect();
       app.renderHeatMap();
     }
   }
